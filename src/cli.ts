@@ -156,6 +156,65 @@ function compileCommand(objective: string, tags: string[]) {
   console.log(`Rules excluded:   ${compiledBundle.rules_excluded.join(", ")}`);
 }
 
+function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
+  const targetDir = opts.global
+    ? path.join(process.env.HOME || "~", ".harness")
+    : process.cwd();
+
+  const harnessDirPath = opts.global ? targetDir : harnessDir(targetDir);
+
+  if (!fs.existsSync(harnessDirPath)) {
+    console.error(`Harness not initialized in ${targetDir}`);
+    process.exit(1);
+  }
+
+  // Warn if ledger has data
+  if (!opts.global) {
+    const ledgerFile = path.join(harnessDirPath, "ledger.jsonl");
+    if (fs.existsSync(ledgerFile)) {
+      const lines = fs.readFileSync(ledgerFile, "utf8").split("\n").filter((l) => l.trim());
+      if (lines.length > 0 && !opts.force) {
+        console.error(`Warning: Ledger has ${lines.length} entries. Data will be lost.`);
+        console.error(`Use --force to proceed with uninstall.`);
+        process.exit(1);
+      }
+    }
+  }
+
+  // Remove .harness/
+  fs.rmSync(harnessDirPath, { recursive: true, force: true });
+  console.log(`Removed: ${harnessDirPath}`);
+
+  if (!opts.global) {
+    // Remove hook from .claude/settings.json
+    const settingsFile = claudeSettingsPath(targetDir);
+    if (fs.existsSync(settingsFile)) {
+      try {
+        const settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+        if (settings.hooks && settings.hooks["user-prompt-submit"] === "harness intercept") {
+          delete settings.hooks["user-prompt-submit"];
+          if (Object.keys(settings.hooks).length === 0) {
+            delete settings.hooks;
+          }
+          fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
+          console.log(`Removed hook from: ${settingsFile}`);
+        }
+      } catch {
+        console.warn(`Could not update ${settingsFile} (malformed JSON)`);
+      }
+    }
+
+    // Remove HARNESS_README.md if it exists
+    const readmePath = path.join(targetDir, "HARNESS_README.md");
+    if (fs.existsSync(readmePath)) {
+      fs.unlinkSync(readmePath);
+      console.log(`Removed: ${readmePath}`);
+    }
+  }
+
+  console.log(`\nHarness uninstalled from ${opts.global ? "global" : targetDir}`);
+}
+
 function interceptCommand() {
   console.log("Harness intercept hook (not yet implemented)");
   console.log("This will be called by Claude Code on user-prompt-submit");
@@ -186,6 +245,13 @@ function main() {
         break;
       }
 
+      case "uninstall":
+        uninstallCommand({
+          global: args.includes("--global"),
+          force: args.includes("--force"),
+        });
+        break;
+
       case "intercept":
         interceptCommand();
         break;
@@ -197,12 +263,15 @@ Usage:
   harness init [--global]         Initialize .harness/ in current dir (or ~/.harness/)
   harness report [--global]       Show token savings and system metrics
   harness compile "goal" tags     Compile context bundle for a step
+  harness uninstall [--global] [--force]  Remove .harness/ and hooks
   harness intercept               (Internal: called by Claude Code hook)
 
 Examples:
   harness init                    # Set up harness in current project
   harness report                  # View stats for current project
   harness compile "fix auth bug" typescript,security,testing
+  harness uninstall               # Remove harness from current project
+  harness uninstall --force       # Remove even if ledger has data
 
 After init, harness runs transparently — just use Claude Code normally.
 `);

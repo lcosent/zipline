@@ -63,8 +63,8 @@ harness report
 
 ## Status
 
-**Current:** M0-M3, M5-M7 implemented and passing  
-**Next:** M4 (full DESIGN → PLAN → BUILD → VERIFY loop)
+**Current:** All milestones (M0-M7) implemented and passing  
+**Version:** 0.1.0
 
 ### Milestones
 
@@ -72,7 +72,7 @@ harness report
 - ✅ **M1**: Context compiler + ledger (64.4% median savings, passed GO/NO-GO gate)
 - ✅ **M2**: Router (Haiku/Sonnet/Opus, escalation, auto-demote)
 - ✅ **M3**: Contracts (typed I/O, schema validation, 70% output token reduction)
-- ❌ **M4**: The Loop (DESIGN → PLAN → GATE → BUILD → VERIFY) — **in progress**
+- ✅ **M4**: The Loop (DESIGN → PLAN → GATE → BUILD → VERIFY)
 - ✅ **M5**: Learning (ledger → self-tuning policy, 75% of starting cost)
 - ✅ **M6**: Token-economy dashboard (`harness report`)
 - ✅ **M7**: Cross-project policy (shared rules/policy across repos)
@@ -115,6 +115,13 @@ harness report
 
 harness report --global
 # Aggregate stats across all repos using harness
+
+harness uninstall
+# Remove .harness/ and hooks from current project
+# Warns if ledger has data (use --force to override)
+
+harness uninstall --force
+# Remove even if ledger contains logged operations
 ```
 
 ### Manual Compilation
@@ -221,13 +228,14 @@ All tests use the existing `.harness/` fixtures in this repo.
 
 ### v0.1 (Current)
 - ✅ Compiler, Router, Contracts, Ledger, Reporting
-- ✅ CLI: `init`, `report`, `compile`
-- ❌ M4: Full loop (DESIGN → VERIFY)
-- ❌ Hook integration (intercept Claude Code prompts)
+- ✅ CLI: `init`, `report`, `compile`, `uninstall`
+- ✅ M4: Full loop (DESIGN → PLAN → GATE → BUILD → VERIFY)
+- ✅ All milestone tests passing (M0-M7)
+- ❌ Hook integration (intercept Claude Code prompts) — next release
 
 ### v0.2 (Next)
-- M4 implementation (design debate, milestone gates, santa-method verify)
 - Hook: transparent context compilation on every `claude>` prompt
+- Real LLM integration (currently simulated in tests)
 - Cross-project policy sync (`harness policy pull/push`)
 
 ### v1.0
