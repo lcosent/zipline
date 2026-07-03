@@ -1,6 +1,6 @@
 import { compile, fullContextBundle, tokenCount, loadRules, Bundle } from "./compiler";
 import { appendLedger } from "./ledger";
-import { findHarnessRoot } from "./paths";
+import { findZiplineRoot } from "./paths";
 
 // Payload Claude Code sends on stdin for a UserPromptSubmit hook.
 export interface HookInput {
@@ -57,7 +57,7 @@ export function inferTags(prompt: string, repoRoot: string): string[] {
 export function renderContext(bundle: Bundle): string {
   if (bundle.constraints.length === 0) return "";
   return [
-    "Relevant project rules for this task (compiled by harness):",
+    "Relevant project rules for this task (compiled by zipline):",
     ...bundle.constraints.map((c) => `- ${c}`),
   ].join("\n");
 }
@@ -149,10 +149,10 @@ export async function interceptFromStdin(readStdin: () => Promise<string>): Prom
     }
   }
 
-  // Resolve the harness root from the hook's cwd (the user's project), not ours.
-  const root = findHarnessRoot(input.cwd ?? process.cwd());
+  // Resolve the zipline root from the hook's cwd (the user's project), not ours.
+  const root = findZiplineRoot(input.cwd ?? process.cwd());
   if (!root) {
-    // Project isn't harness-initialized; do nothing, don't disturb the prompt.
+    // Project isn't zipline-initialized; do nothing, don't disturb the prompt.
     process.exit(0);
   }
 

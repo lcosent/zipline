@@ -1,6 +1,6 @@
-# Contributing to Harness
+# Contributing to Zipline
 
-Thank you for your interest in contributing to Harness! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Zipline! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -19,7 +19,7 @@ Create an issue with:
 - **Steps to reproduce** with minimal example
 - **Expected behavior** vs **actual behavior**
 - **Environment details** (OS, versions)
-- **Relevant logs** from `.harness/ledger.jsonl` if applicable
+- **Relevant logs** from `.zipline/ledger.jsonl` if applicable
 
 ### Suggesting Features
 
@@ -43,8 +43,8 @@ Feature requests should include:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/harness.git
-cd harness
+git clone https://github.com/YOUR_USERNAME/zipline.git
+cd zipline
 
 # Install dependencies
 npm install
@@ -91,7 +91,7 @@ refactor: Extract tier selection to separate function
 
 ### Test Structure
 - Each milestone has a test file: `src/m1-test.ts`, `src/m2-test.ts`, etc.
-- Tests use the existing `.harness/` fixtures in the repo
+- Tests use the existing `.zipline/` fixtures in the repo
 - Tests must be deterministic and self-contained
 
 ### Writing Tests
@@ -120,13 +120,13 @@ function main() {
 ```bash
 npm test              # All milestones
 npm run test:m1       # Specific milestone
-npm run test:m0       # Autonomy harness
+npm run test:m0       # Autonomy zipline
 ```
 
 ## Project Structure
 
 ```
-harness/
+zipline/
 ├─ src/
 │  ├─ cli.ts          # CLI entrypoint
 │  ├─ compiler.ts     # M1: Context compiler
@@ -137,7 +137,7 @@ harness/
 │  ├─ report.ts       # M6: Token dashboard
 │  ├─ paths.ts        # Path resolution
 │  └─ *-test.ts       # Milestone tests
-├─ .harness/
+├─ .zipline/
 │  ├─ rules/          # Sample rules
 │  └─ policy.yaml     # Default policy
 ├─ DESIGN.md          # Architecture decisions

@@ -12,20 +12,20 @@ import { readLedger } from "./ledger";
 
 // M13 — cross-project policy sync. push local→central; pull central→local with
 // per-repo overrides preserved; provenance logged. Isolated via a temp central
-// store (HARNESS_POLICY_REMOTE) and temp repos — never touches the real global.
+// store (ZIPLINE_POLICY_REMOTE) and temp repos — never touches the real global.
 
 function makeRepo(policy?: string): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "harness-m13-"));
-  fs.mkdirSync(path.join(dir, ".harness"), { recursive: true });
-  fs.writeFileSync(path.join(dir, ".harness", "ledger.jsonl"), "");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "zipline-m13-"));
+  fs.mkdirSync(path.join(dir, ".zipline"), { recursive: true });
+  fs.writeFileSync(path.join(dir, ".zipline", "ledger.jsonl"), "");
   if (policy !== undefined) {
-    fs.writeFileSync(path.join(dir, ".harness", "policy.yaml"), policy);
+    fs.writeFileSync(path.join(dir, ".zipline", "policy.yaml"), policy);
   }
   return dir;
 }
 
 function localPolicy(repo: string): PolicyMap {
-  return parsePolicy(fs.readFileSync(path.join(repo, ".harness", "policy.yaml"), "utf8"));
+  return parsePolicy(fs.readFileSync(path.join(repo, ".zipline", "policy.yaml"), "utf8"));
 }
 
 function main() {
@@ -37,8 +37,8 @@ function main() {
   };
 
   // Isolated central store.
-  const central = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "harness-central-")), "policy.yaml");
-  process.env.HARNESS_POLICY_REMOTE = central;
+  const central = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "zipline-central-")), "policy.yaml");
+  process.env.ZIPLINE_POLICY_REMOTE = central;
 
   // 0. Parse/serialize round-trips.
   const sample = "# hdr\ncontext-compile: haiku\nreview: sonnet\n";
@@ -70,7 +70,7 @@ function main() {
   // cleanup
   for (const d of [repoA, repoB, repoC]) fs.rmSync(d, { recursive: true, force: true });
   fs.rmSync(path.dirname(central), { recursive: true, force: true });
-  delete process.env.HARNESS_POLICY_REMOTE;
+  delete process.env.ZIPLINE_POLICY_REMOTE;
 
   console.log("---");
   console.log(`M13 RESULT: ${fail === 0 ? "PASS" : "FAIL"}  (${pass} passed, ${fail} failed)`);

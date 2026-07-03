@@ -2,15 +2,15 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Finds .harness/ by walking upward from cwd (like git does with .git/).
+ * Finds .zipline/ by walking upward from cwd (like git does with .git/).
  * Returns null if not found.
  */
-export function findHarnessRoot(startDir = process.cwd()): string | null {
+export function findZiplineRoot(startDir = process.cwd()): string | null {
   let dir = path.resolve(startDir);
   const root = path.parse(dir).root;
 
   while (dir !== root) {
-    const candidate = path.join(dir, ".harness");
+    const candidate = path.join(dir, ".zipline");
     if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
       return dir;
     }
@@ -20,32 +20,32 @@ export function findHarnessRoot(startDir = process.cwd()): string | null {
 }
 
 /**
- * Gets the harness root, throwing a helpful error if not initialized.
+ * Gets the zipline root, throwing a helpful error if not initialized.
  */
-export function requireHarnessRoot(): string {
-  const root = findHarnessRoot();
+export function requireZiplineRoot(): string {
+  const root = findZiplineRoot();
   if (!root) {
     throw new Error(
-      "Not a harness repository. Run 'harness init' in your project root."
+      "Not a zipline repository. Run 'zipline init' in your project root."
     );
   }
   return root;
 }
 
-export function harnessDir(repoRoot: string): string {
-  return path.join(repoRoot, ".harness");
+export function ziplineDir(repoRoot: string): string {
+  return path.join(repoRoot, ".zipline");
 }
 
 export function rulesDir(repoRoot: string): string {
-  return path.join(harnessDir(repoRoot), "rules");
+  return path.join(ziplineDir(repoRoot), "rules");
 }
 
 export function ledgerPath(repoRoot: string): string {
-  return path.join(harnessDir(repoRoot), "ledger.jsonl");
+  return path.join(ziplineDir(repoRoot), "ledger.jsonl");
 }
 
 export function policyPath(repoRoot: string): string {
-  return path.join(harnessDir(repoRoot), "policy.yaml");
+  return path.join(ziplineDir(repoRoot), "policy.yaml");
 }
 
 export function claudeSettingsPath(repoRoot: string): string {

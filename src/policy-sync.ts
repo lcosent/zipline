@@ -9,15 +9,15 @@ import { appendLedger } from "./ledger";
 // policy up to a central store; `pull` layers the central policy UNDER the
 // repo's own entries (per-repo overrides always win). Provenance is logged.
 //
-// Central store: $HARNESS_POLICY_REMOTE if set, else ~/.harness/policy.yaml
-// (the global path `harness init --global` creates). Flat `key: tier` format,
+// Central store: $ZIPLINE_POLICY_REMOTE if set, else ~/.zipline/policy.yaml
+// (the global path `zipline init --global` creates). Flat `key: tier` format,
 // parsed directly — no YAML dependency.
 
 export type PolicyMap = Record<string, Tier>;
 
 export function centralPolicyPath(): string {
-  if (process.env.HARNESS_POLICY_REMOTE) return process.env.HARNESS_POLICY_REMOTE;
-  return path.join(process.env.HOME || "", ".harness", "policy.yaml");
+  if (process.env.ZIPLINE_POLICY_REMOTE) return process.env.ZIPLINE_POLICY_REMOTE;
+  return path.join(process.env.HOME || "", ".zipline", "policy.yaml");
 }
 
 /** Parse the flat `# comment` / `key: tier` policy format. */
@@ -44,7 +44,7 @@ function readPolicyFile(file: string): PolicyMap {
 }
 
 const HEADER =
-  "# Harness routing policy\n# Maps step types to Anthropic model tiers (haiku/sonnet/opus)";
+  "# Zipline routing policy\n# Maps step types to Anthropic model tiers (haiku/sonnet/opus)";
 
 export interface SyncResult {
   central: string;

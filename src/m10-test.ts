@@ -4,13 +4,13 @@ import { encode } from "gpt-tokenizer";
 // M10 — real LLM calls via the claude CLI subscription, with a deterministic
 // offline stub. Deterministic checks force simulate mode so they're reproducible
 // and need no subscription/network (CI stays green). M15 adds an OPT-IN live gate
-// (HARNESS_LIVE=1) that makes one real subscription call to validate full
+// (ZIPLINE_LIVE=1) that makes one real subscription call to validate full
 // execution — skipped (not failed) offline or without the flag.
 
 // Capture the live opt-in BEFORE we force simulate for the deterministic block.
-const LIVE_REQUESTED = process.env.HARNESS_LIVE === "1";
+const LIVE_REQUESTED = process.env.ZIPLINE_LIVE === "1";
 
-process.env.HARNESS_SIMULATE = "1";
+process.env.ZIPLINE_SIMULATE = "1";
 
 function main() {
   let pass = 0;
@@ -21,7 +21,7 @@ function main() {
   };
 
   // 1. Simulate mode is active when forced.
-  check("liveAvailable() is false under HARNESS_SIMULATE=1", liveAvailable() === false);
+  check("liveAvailable() is false under ZIPLINE_SIMULATE=1", liveAvailable() === false);
 
   // 2. callModel returns real (non-hardcoded) token counts derived from output.
   const r1 = callModel("Implement a login function with input validation", "sonnet");
@@ -49,19 +49,19 @@ function main() {
 
   // 6. The live path EXISTS and is reachable (we just don't exercise it here).
   //    Flip simulate off transiently and confirm liveAvailable is a real probe.
-  delete process.env.HARNESS_SIMULATE;
+  delete process.env.ZIPLINE_SIMULATE;
   const liveProbe = liveAvailable(); // true iff claude CLI present on this machine
-  process.env.HARNESS_SIMULATE = "1";
+  process.env.ZIPLINE_SIMULATE = "1";
   check("liveAvailable(): real probe returns a boolean (live path wired)", typeof liveProbe === "boolean");
   console.log(`  note: claude CLI ${liveProbe ? "IS" : "is NOT"} available on this machine — live calls ${liveProbe ? "would run on subscription" : "fall back to simulate"}`);
 
-  // 7. M15 live gate (opt-in, full execution). Only runs with HARNESS_LIVE=1 AND
+  // 7. M15 live gate (opt-in, full execution). Only runs with ZIPLINE_LIVE=1 AND
   //    a real claude CLI present — makes ONE real haiku call on the subscription.
   //    Otherwise SKIP (not FAIL) so offline/CI stays green. Cost-guarded to 1 call.
   if (LIVE_REQUESTED && liveProbe) {
-    delete process.env.HARNESS_SIMULATE; // exercise the REAL path
+    delete process.env.ZIPLINE_SIMULATE; // exercise the REAL path
     const live = callModel("Reply with exactly: DONE", "haiku");
-    process.env.HARNESS_SIMULATE = "1";
+    process.env.ZIPLINE_SIMULATE = "1";
     check(
       "LIVE: real subscription call → source=claude-cli, tokens_out>0",
       live.source === "claude-cli" && live.tokens_out > 0,
@@ -69,7 +69,7 @@ function main() {
     );
   } else {
     console.log(
-      `SKIP  LIVE gate (${LIVE_REQUESTED ? "claude CLI not available" : "set HARNESS_LIVE=1 to run a real call"})`
+      `SKIP  LIVE gate (${LIVE_REQUESTED ? "claude CLI not available" : "set ZIPLINE_LIVE=1 to run a real call"})`
     );
   }
 

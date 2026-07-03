@@ -30,7 +30,7 @@ tags: [git, commits]
 Write commit messages that explain why, not what. Use conventional commit format: \`feat:\`, \`fix:\`, \`refactor:\`, \`docs:\`, \`test:\`. Keep commits atomic — one logical change per commit. Always review \`git diff --staged\` before committing.`,
 };
 
-export const DEFAULT_POLICY = `# Harness routing policy
+export const DEFAULT_POLICY = `# Zipline routing policy
 # Maps step types to Anthropic model tiers (haiku/sonnet/opus)
 # Lower tiers are cheaper; escalation happens on contract validation failure
 
@@ -48,14 +48,14 @@ review: sonnet
 // of matcher-objects, each holding a "hooks" array of command entries.
 // UserPromptSubmit takes no matcher — it fires on every prompt submission.
 export const HOOK_EVENT = "UserPromptSubmit";
-export const HOOK_COMMAND = "harness intercept";
+export const HOOK_COMMAND = "zipline intercept";
 
 // PostToolUse compresses verbose Bash output before it reaches the model's
 // context. matcher "Bash" is an exact tool-name match; the command replaces the
 // model's view via hookSpecificOutput.updatedToolOutput (side effects already ran).
 export const POST_TOOL_EVENT = "PostToolUse";
 export const POST_TOOL_MATCHER = "Bash";
-export const POST_TOOL_COMMAND = "harness compress-output";
+export const POST_TOOL_COMMAND = "zipline compress-output";
 
 export const HOOK_CONFIG = {
   hooks: {
@@ -73,24 +73,24 @@ export const HOOK_CONFIG = {
   },
 };
 
-export const README = `# Harness
+export const README = `# Zipline
 
-This repository is configured with **harness** — a deterministic orchestration spine for Claude Code.
+This repository is configured with **zipline** — a deterministic orchestration spine for Claude Code.
 
 ## What It Does
 
 - **Context compilation**: Every step gets minimal context (only relevant rules), not the full CLAUDE.md
 - **Token savings**: Median 60-70% reduction in input tokens
-- **Learning**: Every operation logs to \`.harness/ledger.jsonl\` for continuous improvement
+- **Learning**: Every operation logs to \`.zipline/ledger.jsonl\` for continuous improvement
 - **Routing**: Picks the cheapest Anthropic tier (Haiku/Sonnet/Opus) that can pass each step
 
 ## Daily Usage
 
-After initialization, harness is **transparent** — just use Claude Code normally:
+After initialization, zipline is **transparent** — just use Claude Code normally:
 
 \`\`\`bash
 claude> fix the auth bug
-# Harness automatically:
+# Zipline automatically:
 # - Compiles minimal context (only security, typescript, testing rules)
 # - Routes to appropriate tier (likely Sonnet for implementation)
 # - Logs tokens_in, baseline_tokens, savings to ledger
@@ -101,7 +101,7 @@ claude> fix the auth bug
 For complex features, use the full design → plan → build → verify loop:
 
 \`\`\`bash
-claude> /harness build "add user authentication"
+claude> /zipline build "add user authentication"
 # Runs: DESIGN (debate) → PLAN (milestones) → GATE → BUILD → VERIFY
 \`\`\`
 
@@ -110,16 +110,16 @@ claude> /harness build "add user authentication"
 Check token savings and system behavior:
 
 \`\`\`bash
-harness report
+zipline report
 # Shows: total runs, savings %, tier mix, escalation rate, stuck count
 \`\`\`
 
 ## Files
 
-- \`.harness/rules/*.md\` — Context rules, one concern per file, frontmatter-tagged
-- \`.harness/policy.yaml\` — Step-to-tier routing policy (auto-tuned over time)
-- \`.harness/ledger.jsonl\` — Append-only log of every operation
-- \`.claude/settings.json\` — Hook configuration (added by \`harness init\`)
+- \`.zipline/rules/*.md\` — Context rules, one concern per file, frontmatter-tagged
+- \`.zipline/policy.yaml\` — Step-to-tier routing policy (auto-tuned over time)
+- \`.zipline/ledger.jsonl\` — Append-only log of every operation
+- \`.claude/settings.json\` — Hook configuration (added by \`zipline init\`)
 
 ## Learn More
 

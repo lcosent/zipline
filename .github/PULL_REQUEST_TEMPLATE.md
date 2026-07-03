@@ -16,7 +16,7 @@ Fixes #(issue number)
 
 ## Milestones Affected
 <!-- Check all that apply -->
-- [ ] M0: Autonomy harness
+- [ ] M0: Autonomy zipline
 - [ ] M1: Compiler
 - [ ] M2: Router
 - [ ] M3: Contracts
@@ -38,10 +38,10 @@ npm test output:
 
 ### Manual Testing
 <!-- Describe manual testing steps -->
-- [ ] Tested `harness init`
-- [ ] Tested `harness report`
-- [ ] Tested `harness compile`
-- [ ] Tested `harness uninstall`
+- [ ] Tested `zipline init`
+- [ ] Tested `zipline report`
+- [ ] Tested `zipline compile`
+- [ ] Tested `zipline uninstall`
 - [ ] Other: [describe]
 
 ## Checklist

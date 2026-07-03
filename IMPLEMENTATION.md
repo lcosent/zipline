@@ -1,4 +1,4 @@
-# Harness — Implementation Summary
+# Zipline — Implementation Summary
 
 **Version:** 0.1.0  
 **Status:** All milestones complete (M0-M7)  
@@ -20,7 +20,7 @@ A **deterministic orchestration spine** for Claude Code that enforces:
 
 ## Milestones Delivered
 
-### M0: Autonomy Harness ✅
+### M0: Autonomy Zipline ✅
 - Self-running milestone loops with PASS/FAIL/STUCK detection
 - `hello` milestone (pass test)
 - `always-fail` milestone (stuck detection test)
@@ -28,7 +28,7 @@ A **deterministic orchestration spine** for Claude Code that enforces:
 
 ### M1: Compiler + Ledger ✅
 - Context compiler: `compile(goal, tags)` → minimal bundle
-- Rules: `.harness/rules/*.md` with frontmatter tags
+- Rules: `.zipline/rules/*.md` with frontmatter tags
 - Ledger: append-only JSONL with `tokens_in`, `baseline_tokens`
 - **GO/NO-GO gate passed:** 64.4% median savings, no correctness regression
 
@@ -59,7 +59,7 @@ A **deterministic orchestration spine** for Claude Code that enforces:
 - **Result:** Tuned policy 75% of starting cost at pass-rate parity
 
 ### M6: Dashboard ✅
-- `harness report`: runs, savings %, tier mix, escalations, stuck count
+- `zipline report`: runs, savings %, tier mix, escalations, stuck count
 - Savings by milestone with regression detection
 - Reconciliation check vs raw ledger sums
 - **Result:** All metrics visible, seeded regression detected
@@ -76,8 +76,8 @@ A **deterministic orchestration spine** for Claude Code that enforces:
 ### First Time (Per Repo)
 ```bash
 cd my-project
-harness init
-# Creates: .harness/rules/, .harness/policy.yaml, .harness/ledger.jsonl
+zipline init
+# Creates: .zipline/rules/, .zipline/policy.yaml, .zipline/ledger.jsonl
 # Configures: .claude/settings.json hook
 ```
 
@@ -92,7 +92,7 @@ claude> fix the auth bug
 
 ### Reporting
 ```bash
-harness report
+zipline report
 # Output:
 #   Total runs:       29
 #   Pass rate:        89.7%
@@ -104,17 +104,17 @@ harness report
 
 ### Explicit Orchestration
 ```bash
-claude> /harness build "add user authentication"
+claude> /zipline build "add user authentication"
 # Runs: DESIGN → PLAN → GATE → BUILD → VERIFY
 # Full milestone-based loop with santa-method verification
 ```
 
 ### Removal
 ```bash
-harness uninstall
+zipline uninstall
 # Warns if ledger has data
-harness uninstall --force
-# Removes: .harness/, hooks, HARNESS_README.md
+zipline uninstall --force
+# Removes: .zipline/, hooks, ZIPLINE_README.md
 ```
 
 ---
@@ -122,10 +122,10 @@ harness uninstall --force
 ## Architecture
 
 ```
-harness/
+zipline/
 ├─ src/
 │  ├─ cli.ts                 # CLI entrypoint (init/report/compile/uninstall)
-│  ├─ paths.ts               # Path resolution (finds .harness/ upward)
+│  ├─ paths.ts               # Path resolution (finds .zipline/ upward)
 │  ├─ compiler.ts            # M1: Context compiler
 │  ├─ policy.ts              # M2: Tier routing
 │  ├─ contract.ts            # M3: Schema validation
@@ -149,7 +149,7 @@ harness/
 │     ├─ hello.ts            # M0 pass test
 │     └─ always-fail.ts      # M0 stuck test
 │
-├─ .harness/                 # Per-repo state (gitignored: ledger.jsonl)
+├─ .zipline/                 # Per-repo state (gitignored: ledger.jsonl)
 │  ├─ rules/                 # 6 sample rules (typescript, git, security, etc.)
 │  ├─ policy.yaml            # Tier routing policy
 │  └─ ledger.jsonl           # Operation log
@@ -164,10 +164,10 @@ harness/
 
 ## Key Design Decisions
 
-### 1. Per-Repo `.harness/` (Like Git)
-- Walks upward to find `.harness/` from any subdirectory
+### 1. Per-Repo `.zipline/` (Like Git)
+- Walks upward to find `.zipline/` from any subdirectory
 - Self-contained: rules, policy, ledger in one place
-- Optional global `~/.harness/` for shared policy
+- Optional global `~/.zipline/` for shared policy
 
 ### 2. Compiler Over-Includes Conservatively
 - Silent-drop protection: throws if required tag missing
@@ -185,7 +185,7 @@ harness/
 - Can always reconstruct what naive approach would have cost
 
 ### 5. Orchestrator Boundary
-- Harness owns: routing, context, ledger
+- Zipline owns: routing, context, ledger
 - Gstack skills (if used): leaf work-steps, invoked headless
 - No nested orchestrators fighting
 
@@ -238,11 +238,11 @@ M7: shared cold-start cost <= hand-written: PASS
 Full workflow validated:
 
 ```bash
-✅ harness init              Creates .harness/ structure
-✅ harness compile           Context compilation works
-✅ harness report            Empty ledger handled
-✅ harness uninstall         Data loss protection works
-✅ harness uninstall --force Forced removal works
+✅ zipline init              Creates .zipline/ structure
+✅ zipline compile           Context compilation works
+✅ zipline report            Empty ledger handled
+✅ zipline uninstall         Data loss protection works
+✅ zipline uninstall --force Forced removal works
 ```
 
 ---
@@ -250,7 +250,7 @@ Full workflow validated:
 ## What's Next (v0.2)
 
 ### 1. Hook Integration
-- Implement `harness intercept` command
+- Implement `zipline intercept` command
 - Claude Code calls on `user-prompt-submit`
 - Compile context → inject into prompt → log to ledger
 - Transparent from user's perspective
@@ -262,8 +262,8 @@ Full workflow validated:
 - Real contract validation → repair retry
 
 ### 3. Cross-Repo Policy Sync
-- `harness policy pull` — fetch shared policy
-- `harness policy push` — update shared from local tuning
+- `zipline policy pull` — fetch shared policy
+- `zipline policy push` — update shared from local tuning
 - Version tracking, provenance logs
 
 ### 4. Continuous Learning Pipeline
@@ -275,10 +275,10 @@ Full workflow validated:
 
 ## Non-Goals (Revisited)
 
-- ❌ Not replacing gstack/rtk — harness orchestrates them
+- ❌ Not replacing gstack/rtk — zipline orchestrates them
 - ❌ Not a hosted product — portable across repos, runs locally
 - ❌ Not model-training — "learning" = policy/rule updates from outcomes
-- ❌ Not Claude-replacing — harness is a spine, Claude is the engine
+- ❌ Not Claude-replacing — zipline is a spine, Claude is the engine
 
 ---
 
@@ -323,7 +323,7 @@ Escalations:      <5% of runs
 Stuck:            0 (outside of intentional always-fail test)
 ```
 
-**Falsifiable claim:** Harness saves ≥60% input tokens vs full-context at ≥90% pass-rate.
+**Falsifiable claim:** Zipline saves ≥60% input tokens vs full-context at ≥90% pass-rate.
 
 **Evidence:** M1 ledger entries, reconciled in M6 report.
 
@@ -331,7 +331,7 @@ Stuck:            0 (outside of intentional always-fail test)
 
 ## Conclusion
 
-Harness delivers on the thesis:
+Zipline delivers on the thesis:
 
 > Don't build a new agent framework. Build a thin **deterministic spine** that enforces context compilation, contracts, and learning.
 

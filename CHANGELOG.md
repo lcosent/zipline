@@ -25,12 +25,12 @@ binary, offline test (`npm test` runs M1–M19 green).
 - **M17: terse-output A/B output-delta measurement.** `src/integrations/terse-ab.ts`
   runs a paired no-terse-vs-terse model call and returns the signed OUTPUT-token
   delta — the honest measurement terse needed (its input-side fragment always
-  reads negative). `HARNESS_TERSE_AB=1` wires it into the loop's build step; the
+  reads negative). `ZIPLINE_TERSE_AB=1` wires it into the loop's build step; the
   logged delta feeds the existing `shouldDisable` window, so a net-negative terse
   now trips on real output data. `test:m17` 7/7.
 - **M18: optional gstack integration.** `RepoEnv.gstackInstalled` detects the
   gstack orchestration suite (`$GSTACK_HOME` or `~/.claude/skills/gstack`);
-  `harness doctor` surfaces an "Orchestration (optional)" section. Detected, never
+  `zipline doctor` surfaces an "Orchestration (optional)" section. Detected, never
   invoked; absence degrades honestly and never throws. `test:m18` 5/5.
 - **M19: production-ready hook performance.** A hard latency budget (150ms) pins
   both hot-path hooks — `intercept` (~0.5ms) and `compress-output` (~3ms on a
@@ -47,7 +47,7 @@ binary, offline test (`npm test` runs M1–M19 green).
 
 ### Added
 - **M15: live-path validation gate.** `src/m10-test.ts` gains an opt-in gate that,
-  under `HARNESS_LIVE=1` with the `claude` CLI present, makes ONE real subscription
+  under `ZIPLINE_LIVE=1` with the `claude` CLI present, makes ONE real subscription
   call and asserts `source==="claude-cli"` and `tokens_out>0` — validating M10's
   live path by full execution, not just simulate. Offline or without the flag the
   gate is SKIPPED (not failed), so `npm test`/CI stays green. Verified both states:
@@ -65,21 +65,21 @@ binary, offline test (`npm test` runs M1–M19 green).
 ## [0.7.0] - 2026-07-03
 
 ### Added
-- **M14: continuous-learning pipeline** — `harness learn` mines the ledger and
+- **M14: continuous-learning pipeline** — `zipline learn` mines the ledger and
   proposes rule changes from evidence, deterministically: DE-PRIORITIZE a rule
   that's excluded in ≥80% of runs with zero failure cost, and PIN a rule whose
   absence correlates with failures (fail-rate ≥30pts higher when excluded vs
   included). Proposals are human-reviewable and **never written silently** —
-  `harness learn` prints them; nothing touches `.harness/rules/` without explicit
+  `zipline learn` prints them; nothing touches `.zipline/rules/` without explicit
   approval (`--apply` stages for review; automatic rewriting is deferred by
   design). Closes the DESIGN §4.5 cross-session learning loop.
 
 ## [0.6.0] - 2026-07-03
 
 ### Added
-- **M13: cross-project policy sync** — `harness policy pull|push` makes the
+- **M13: cross-project policy sync** — `zipline policy pull|push` makes the
   routing policy a portable, versioned artifact shared across repos. Central
-  store is `$HARNESS_POLICY_REMOTE` or `~/.harness/policy.yaml`. `push` publishes
+  store is `$ZIPLINE_POLICY_REMOTE` or `~/.zipline/policy.yaml`. `push` publishes
   the repo's tuned policy (local wins); `pull` layers central defaults UNDER the
   repo's own entries so per-repo overrides always survive. Every sync logs
   provenance (op, changed steps, source) to the ledger. Flat `key: tier` parser —
@@ -88,7 +88,7 @@ binary, offline test (`npm test` runs M1–M19 green).
 ## [0.5.0] - 2026-07-03
 
 ### Added
-- **M12: terse-output auto-disable, observable in `harness doctor`.** New
+- **M12: terse-output auto-disable, observable in `zipline doctor`.** New
   `resolveAvailability()` overlays the auto-disable decision on top of a
   capability's own availability — the single source of truth doctor and
   runCapability now share. This closes the M8 gap where doctor reported "native"
@@ -102,14 +102,14 @@ binary, offline test (`npm test` runs M1–M19 green).
 ## [0.4.0] - 2026-07-03
 
 ### Added
-- **M11: PostToolUse compression of real Bash output.** `harness init` now also
+- **M11: PostToolUse compression of real Bash output.** `zipline init` now also
   registers a `PostToolUse` hook (matcher `Bash`) calling the new
-  `harness compress-output` command. It reads the tool-result JSON from stdin,
+  `zipline compress-output` command. It reads the tool-result JSON from stdin,
   compresses `tool_response.stdout` with the M8 native compressor, and returns a
   `hookSpecificOutput.updatedToolOutput` envelope that **replaces what Claude
   sees** (the command already ran; only the model's view shrinks). ~63% reduction
   on noisy build logs. `stderr`/flags preserved; non-Bash tools pass through.
-- `uninstall` now strips both harness hooks (intercept + compress-output) while
+- `uninstall` now strips both zipline hooks (intercept + compress-output) while
   preserving any user-added hooks on the same events.
 
 ## [0.3.0] - 2026-07-03
@@ -118,31 +118,31 @@ binary, offline test (`npm test` runs M1–M19 green).
 - **M10: Real LLM calls via the `claude` CLI subscription** (no API key). New
   `src/llm.ts` `callModel(prompt, tier)` shells out to `claude -p --model
   <haiku|sonnet|opus> --output-format json` on the user's Claude Code
-  subscription. `HARNESS_SIMULATE=1` or a missing `claude` binary → a
+  subscription. `ZIPLINE_SIMULATE=1` or a missing `claude` binary → a
   deterministic offline stub (no Math.random), so tests/CI run reproducibly with
   no subscription or network. `m4-loop.ts` build/verify steps now call the model
   and log the **real** `tokens_out` (previously hardcoded 800/200/etc.). A failed
   live call degrades to the stub rather than hard-failing the loop.
 
 ### Changed
-- `harness test` runs milestone tests in simulate mode; the loop's pass/fail is
+- `zipline test` runs milestone tests in simulate mode; the loop's pass/fail is
   now driven by model output, not `Math.random()`.
 
 ## [0.2.0] - 2026-07-03
 
 ### Fixed
-- **Claude Code hook format** — `harness init` wrote an invalid hook
+- **Claude Code hook format** — `zipline init` wrote an invalid hook
   (`"user-prompt-submit": "..."`); corrected to the real
   `UserPromptSubmit` PascalCase event with the matcher/command array shape.
   The transparent hook never fired before this fix. Uninstall now strips only
-  harness's own entry, preserving user-added hooks.
+  zipline's own entry, preserving user-added hooks.
 
 ### Added
-- **Connect-the-pipe (`harness intercept`)** — the stub is now a real pipeline:
+- **Connect-the-pipe (`zipline intercept`)** — the stub is now a real pipeline:
   reads Claude Code's `UserPromptSubmit` JSON from stdin, infers rule tags from
   the prompt, compiles a minimal context bundle, injects it via
   `additionalContext`, and logs real input-side `tokens_in` vs `baseline_tokens`
-  to the ledger. Non-harness dirs / failures exit 0 without disturbing the prompt.
+  to the ledger. Non-zipline dirs / failures exit 0 without disturbing the prompt.
 - **M8: Integrations layer** (`src/integrations/`) — 5 native capabilities,
   auto-selected per step (the user never picks one):
   - `output-compress` — native filter/dedupe/truncate of command output; uses
@@ -156,7 +156,7 @@ binary, offline test (`npm test` runs M1–M19 green).
   - Centralized `detect.ts` (`RepoEnv`): one cached probe of tsconfig/node_modules/
     rtk/MCP config — capabilities read flags, never re-probe.
   - Net-negative auto-disable (M2-shaped rolling window) for input-side capabilities.
-- **`harness doctor`** — shows the integrations stack and per-repo availability
+- **`zipline doctor`** — shows the integrations stack and per-repo availability
   (native / accelerated / inactive), plus capability net-delta (kept separate
   from compiler savings to avoid double-counting).
 - Optional `capabilities[]` field on ledger entries (backward-compatible).
@@ -164,14 +164,14 @@ binary, offline test (`npm test` runs M1–M19 green).
 ## [0.1.0] - 2026-07-03
 
 ### Added
-- **M0: Autonomy Harness**
+- **M0: Autonomy Zipline**
   - Self-running milestone loops with PASS/FAIL/STUCK detection
   - `hello` and `always-fail` test milestones
   - No-improvement stop (2 consecutive attempts)
 
 - **M1: Context Compiler + Ledger**
   - Context compiler: `compile(goal, tags)` selects minimal rule set
-  - Rules system: `.harness/rules/*.md` with frontmatter tags
+  - Rules system: `.zipline/rules/*.md` with frontmatter tags
   - Ledger: append-only JSONL with `tokens_in`, `baseline_tokens`
   - **Proven savings:** 64.4% median token reduction vs full-context
   - Silent-drop protection with `rules_included[]`, `rules_excluded[]`
@@ -201,7 +201,7 @@ binary, offline test (`npm test` runs M1–M19 green).
   - **Tuning results:** 75% of starting policy cost at pass-rate parity
 
 - **M6: Dashboard**
-  - `harness report`: runs, savings %, tier mix, escalations
+  - `zipline report`: runs, savings %, tier mix, escalations
   - Savings by milestone with regression detection
   - Ledger reconciliation checks
 
@@ -210,14 +210,14 @@ binary, offline test (`npm test` runs M1–M19 green).
   - Cold-start beats hand-written policy
 
 - **CLI Commands**
-  - `harness init [--global]` - Initialize .harness/ structure
-  - `harness report [--global]` - Token savings dashboard
-  - `harness compile "goal" tags` - Manual context compilation
-  - `harness uninstall [--global] [--force]` - Clean removal with data protection
+  - `zipline init [--global]` - Initialize .zipline/ structure
+  - `zipline report [--global]` - Token savings dashboard
+  - `zipline compile "goal" tags` - Manual context compilation
+  - `zipline uninstall [--global] [--force]` - Clean removal with data protection
 
 - **Path Resolution**
-  - Upward search for `.harness/` (like git with `.git/`)
-  - Per-repo or global `~/.harness/` support
+  - Upward search for `.zipline/` (like git with `.git/`)
+  - Per-repo or global `~/.zipline/` support
   - Works from any subdirectory
 
 - **Documentation**

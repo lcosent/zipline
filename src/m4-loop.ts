@@ -285,7 +285,7 @@ export async function buildStep(
 
   // terse OUTPUT-delta accounting (M17). By default we log neutral (no A/B) so
   // terse never falsely auto-disables on the input-side fragment cost. With
-  // HARNESS_TERSE_AB=1 we run a real no-terse baseline pass and log the signed
+  // ZIPLINE_TERSE_AB=1 we run a real no-terse baseline pass and log the signed
   // OUTPUT delta — the honest measurement that feeds shouldDisable. Opt-in
   // because the A/B doubles model calls for the build step.
   let terseLog = {
@@ -295,7 +295,7 @@ export async function buildStep(
     source: terse.source,
     net_delta_exempt: false,
   };
-  if (process.env.HARNESS_TERSE_AB === "1") {
+  if (process.env.ZIPLINE_TERSE_AB === "1") {
     const ab = measureTerseOutputDelta(baseObjective, tier);
     terseLog = terseABToLogEntry(ab);
   }

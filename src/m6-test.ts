@@ -3,7 +3,7 @@ import * as path from "path";
 import { readLedger, LedgerEntry, LedgerEntryInput } from "./ledger";
 import { buildReport, detectRegression, reconciles } from "./report";
 
-const LEDGER_PATH = path.join(process.cwd(), ".harness", "ledger.jsonl");
+const LEDGER_PATH = path.join(process.cwd(), ".zipline", "ledger.jsonl");
 
 function seedRow(over: Partial<LedgerEntryInput>): LedgerEntryInput {
   return {

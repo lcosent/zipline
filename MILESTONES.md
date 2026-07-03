@@ -1,4 +1,4 @@
-# harness — Milestones
+# zipline — Milestones
 
 **Mode:** EXPANSION · **Companion to:** DESIGN.md
 **Purpose:** Each milestone is a self-contained **goal** with a falsifiable
@@ -15,7 +15,7 @@ machine per milestone, no human in the inner loop:
 ```
 LOAD    read milestone: goal, hypothesis, build, test, success, gate
 BUILD   implement the smallest change that could satisfy success
-TEST    run the test command → capture metrics into .harness/ledger.jsonl
+TEST    run the test command → capture metrics into .zipline/ledger.jsonl
 CHECK   metrics vs success criterion:
           PASS  → run GATE; if gate passes, advance to next milestone
           FAIL  → diagnose, amend, re-BUILD  (max N attempts)
@@ -39,7 +39,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 
 ---
 
-## M0 — Skeleton + autonomy harness
+## M0 — Skeleton + autonomy zipline
 
 - **Goal:** A runnable spine that can execute one trivial milestone end-to-end
   through the LOAD→TEST→CHECK loop, so the machinery itself is proven before real
@@ -47,11 +47,11 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 - **Hypothesis:** The loop state machine can drive a step, capture a metric to the
   ledger, and make a PASS/FAIL/STUCK decision with zero human input.
 - **Build:**
-  - `.harness/` convention: `config.yaml`, `ledger.jsonl`, `rules/`, `milestones/`.
-  - `harness run <milestone-id>` — executes the LOAD→BUILD→TEST→CHECK loop.
+  - `.zipline/` convention: `config.yaml`, `ledger.jsonl`, `rules/`, `milestones/`.
+  - `zipline run <milestone-id>` — executes the LOAD→BUILD→TEST→CHECK loop.
   - Ledger writer (append-only JSONL) with the DESIGN.md §4.5 schema.
   - A no-op "hello" milestone whose success is "ledger has 1 entry with pass=true."
-- **Test:** `harness run hello` then assert the ledger tail parses and `pass==true`.
+- **Test:** `zipline run hello` then assert the ledger tail parses and `pass==true`.
 - **Success criterion:** exit code 0; ledger gains exactly one well-formed entry;
   the loop terminated on its own (no timeout, no manual stop).
 - **Gate → M1:** the loop can also detect FAIL and STUCK — verified by a seeded
@@ -66,7 +66,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
   ≥30% median vs dumping full CLAUDE.md + all candidate files.
 - **Build:**
   - Split a real CLAUDE.md into `rules/*.md`, one concern each, front-matter tagged.
-  - `harness compile <step>` → bundle with `objective, constraints, artifacts,
+  - `zipline compile <step>` → bundle with `objective, constraints, artifacts,
     memory, budget`; over budget → summarize, never truncate.
   - Ledger logs `tokens_in`, `baseline_tokens`, `rules_included[]`,
     `rules_excluded[]` per compile.
@@ -89,7 +89,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
   auto-demote yields lower total token-cost than always-Opus at equal pass-rate.
 - **Build:**
   - `policy.yaml` — declarative step→tier table (DESIGN.md §4.1).
-  - `harness route <step>` → tier; on contract-fail, escalate one tier and re-run.
+  - `zipline route <step>` → tier; on contract-fail, escalate one tier and re-run.
   - Auto-demote: if a step's cheap-tier fail-rate >40% over last 10 runs, promote
     its default tier in `policy.yaml`.
 - **Test:** Replay the M1 step set through the router; compare total token-cost and
@@ -164,9 +164,9 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 
 - **Goal:** Make savings and policy behavior visible so the feedback loop is
   something you can see, not just a number in a JSONL file.
-- **Hypothesis:** A single `harness report` view (savings over time, cost per step
+- **Hypothesis:** A single `zipline report` view (savings over time, cost per step
   type, escalation/demote events, stuck rate) surfaces regressions within one run.
-- **Build:** `harness report` — reads the ledger, renders per-step savings, tier
+- **Build:** `zipline report` — reads the ledger, renders per-step savings, tier
   mix, escalation rate, and a savings-over-time trend.
 - **Test:** Run against a populated ledger; assert every metric the ledger records
   appears and reconciles with raw ledger sums.
@@ -180,7 +180,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
   versioned artifact shared and improved across all your repos.
 - **Hypothesis:** A policy trained on many repos generalizes — a fresh repo adopting
   the shared policy starts closer to optimal than a cold hand-written one.
-- **Build:** `harness policy pull/push` against a central versioned policy; per-repo
+- **Build:** `zipline policy pull/push` against a central versioned policy; per-repo
   overrides layered on top; provenance recorded.
 - **Test:** Adopt the shared policy in a repo it was never trained on; compare
   cold-start cost vs the M2 hand-written policy on that repo's step set.
@@ -194,7 +194,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 
 | # | Milestone | In scope | Note |
 |---|---|---|---|
-| M0 | Autonomy harness | ✅ | Enables self-running loops — the thing you asked for |
+| M0 | Autonomy zipline | ✅ | Enables self-running loops — the thing you asked for |
 | M1 | Compiler + Ledger | ✅ | Make-or-break, hard GO/NO-GO gate |
 | M2 | Router | ✅ | Anthropic tiers only |
 | M3 | Contracts | ✅ | |
@@ -202,16 +202,16 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 | M5 | Learning | ✅ | |
 | M6 | Dashboard | ✅ EXPANSION | Cut if you want a leaner v1 |
 | M7 | Cross-project policy | ✅ EXPANSION | The durable, portable artifact |
-| M8 | Integrations layer | ✅ EXPANSION | 5 native capabilities + accelerators + `harness doctor`; connect-the-pipe intercept |
+| M8 | Integrations layer | ✅ EXPANSION | 5 native capabilities + accelerators + `zipline doctor`; connect-the-pipe intercept |
 | M9 | Docs (Mermaid) | ✅ EXPANSION | Architecture diagrams in README + docs/ARCHITECTURE.md |
 | M10 | Real LLM calls | ✅ EXPANSION | `claude` CLI subscription (no API key) + deterministic simulate stub; real tokens_out |
-| M11 | PostToolUse compress | ✅ EXPANSION | `harness compress-output` replaces Bash stdout via updatedToolOutput; ~63% reduction |
+| M11 | PostToolUse compress | ✅ EXPANSION | `zipline compress-output` replaces Bash stdout via updatedToolOutput; ~63% reduction |
 | M12 | terse auto-disable | ✅ EXPANSION | `resolveAvailability` shows disabled in doctor when terse net-delta goes negative |
-| M13 | Cross-project policy sync | ✅ EXPANSION | `harness policy pull/push`; repo overrides win; provenance logged |
-| M14 | Continuous-learning | ✅ EXPANSION | `harness learn` proposes rule pins/de-prioritize from ledger; proposal-only |
+| M13 | Cross-project policy sync | ✅ EXPANSION | `zipline policy pull/push`; repo overrides win; provenance logged |
+| M14 | Continuous-learning | ✅ EXPANSION | `zipline learn` proposes rule pins/de-prioritize from ledger; proposal-only |
 | M16 | Stable public API | ✅ v1 GATE | Versioned barrel + `LEDGER_SCHEMA_VERSION`; pre-v1 ledgers still parse |
 | M17 | terse A/B output-delta | ✅ v1 GATE | Real no-terse baseline measures OUTPUT delta; feeds auto-disable |
-| M18 | Optional gstack | ✅ v1 GATE | Detected, never invoked; honest degradation in `harness doctor` |
+| M18 | Optional gstack | ✅ v1 GATE | Detected, never invoked; honest degradation in `zipline doctor` |
 | M19 | Hook performance | ✅ v1 GATE | Hard 150ms budget; intercept ~0.5ms, compress ~3ms/4000-line log |
 
 ---
@@ -224,7 +224,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 - **Build:** `src/integrations/` — `detect.ts` (cached `RepoEnv`), 5 capabilities
   (output-compress, symbol-query, doc-fetch, terse-output, decision-log), `registry.ts`
   (tag-based `selectCapabilities`), `index.ts` (`runCapability` + net-delta + auto-disable).
-  `harness doctor` shows per-repo availability. `harness intercept` compiles + injects
+  `zipline doctor` shows per-repo availability. `zipline intercept` compiles + injects
   real context on `UserPromptSubmit` and logs real `tokens_in`.
 - **Success criterion:** 20 gates pass — intercept savings; compress ≥40% on a noisy log
   (hit 66.6%); symbol-query returns a real type without whole-file reads; non-TS
@@ -238,5 +238,5 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
   sequenceDiagram, capability-selection flowchart) + README Integrations section and
   at-a-glance diagram. Hero SVG cut (gold-plating).
 - **Success criterion:** Mermaid fences valid and render on GitHub; README documents
-  the integrations layer and `harness doctor`.
+  the integrations layer and `zipline doctor`.
 - **Gate:** none (leaf).

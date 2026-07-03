@@ -50,9 +50,9 @@ check("empty baseline → delta 0 (no div-by-zero)", zero.delta === 0);
 //    to disabled via the EXISTING shouldDisable window (integration, not a new
 //    mechanism).
 function tempRepo(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "harness-m17-"));
-  fs.mkdirSync(path.join(dir, ".harness"), { recursive: true });
-  fs.writeFileSync(path.join(dir, ".harness", "ledger.jsonl"), "");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "zipline-m17-"));
+  fs.mkdirSync(path.join(dir, ".zipline"), { recursive: true });
+  fs.writeFileSync(path.join(dir, ".zipline", "ledger.jsonl"), "");
   return dir;
 }
 

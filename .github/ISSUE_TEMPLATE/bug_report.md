@@ -23,12 +23,12 @@ What actually happened.
 **Environment**
 - OS: [e.g. macOS 14.0]
 - Node version: [e.g. 18.0.0]
-- Harness version: [e.g. 0.1.0]
+- Zipline version: [e.g. 0.1.0]
 - Claude Code version: [e.g. if applicable]
 
 **Ledger excerpt (if relevant)**
 ```jsonl
-Paste relevant lines from .harness/ledger.jsonl
+Paste relevant lines from .zipline/ledger.jsonl
 Remove any sensitive information
 ```
 

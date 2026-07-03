@@ -26,7 +26,7 @@ Instead, please report them via email to the project maintainer. You should rece
 
 ### Ledger Contents
 
-The `.harness/ledger.jsonl` file logs every operation including:
+The `.zipline/ledger.jsonl` file logs every operation including:
 - Rule names and context
 - Token counts
 - Step descriptions
@@ -36,7 +36,7 @@ The `.harness/ledger.jsonl` file logs every operation including:
 
 ### Rules Directory
 
-Rules in `.harness/rules/*.md` may contain:
+Rules in `.zipline/rules/*.md` may contain:
 - Security policies
 - API endpoints
 - Internal conventions
@@ -49,14 +49,14 @@ Rules in `.harness/rules/*.md` may contain:
 
 ### Hook Execution
 
-The `harness intercept` hook (planned for v0.2) will run on every Claude Code prompt. Ensure:
-- Harness binary is from trusted source
+The `zipline intercept` hook (planned for v0.2) will run on every Claude Code prompt. Ensure:
+- Zipline binary is from trusted source
 - `.claude/settings.json` hook command is not modified maliciously
-- File permissions on `.harness/` prevent unauthorized modification
+- File permissions on `.zipline/` prevent unauthorized modification
 
 ### Policy Files
 
-`.harness/policy.yaml` controls model tier selection. A malicious policy could:
+`.zipline/policy.yaml` controls model tier selection. A malicious policy could:
 - Always route to Opus (expensive)
 - Always route to Haiku (low quality)
 
@@ -64,7 +64,7 @@ The `harness intercept` hook (planned for v0.2) will run on every Claude Code pr
 
 ### Uninstall Protection
 
-`harness uninstall` warns before deleting ledger data. This prevents:
+`zipline uninstall` warns before deleting ledger data. This prevents:
 - Accidental loss of logged operations
 - Loss of learning data
 
@@ -72,15 +72,15 @@ Override with `--force` only when certain.
 
 ## Best Practices
 
-1. **Keep harness updated** to latest version
-2. **Review `.harness/` contents** before committing
+1. **Keep zipline updated** to latest version
+2. **Review `.zipline/` contents** before committing
 3. **Use `.gitignore`** for sensitive logs and rules
 4. **Verify npm package** authenticity before installing
 5. **Check hook configuration** in `.claude/settings.json`
 
 ## Known Issues
 
-None currently. Check [GitHub Issues](https://github.com/YOUR_USERNAME/harness/issues) for reported vulnerabilities.
+None currently. Check [GitHub Issues](https://github.com/YOUR_USERNAME/zipline/issues) for reported vulnerabilities.
 
 ## Disclosure Policy
 
@@ -94,4 +94,4 @@ When a security issue is confirmed:
 
 For security issues only, email: [your-email@example.com]
 
-For general issues, use [GitHub Issues](https://github.com/YOUR_USERNAME/harness/issues).
+For general issues, use [GitHub Issues](https://github.com/YOUR_USERNAME/zipline/issues).

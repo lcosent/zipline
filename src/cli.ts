@@ -2,9 +2,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  findHarnessRoot,
-  requireHarnessRoot,
-  harnessDir,
+  findZiplineRoot,
+  requireZiplineRoot,
+  ziplineDir,
   rulesDir,
   policyPath,
   claudeSettingsPath,
@@ -30,21 +30,21 @@ import { compile, fullContextBundle, tokenCount } from "./compiler";
 
 function initCommand(opts: { global?: boolean } = {}) {
   const targetDir = opts.global
-    ? path.join(process.env.HOME || "~", ".harness")
+    ? path.join(process.env.HOME || "~", ".zipline")
     : process.cwd();
 
-  const harnessDirPath = opts.global ? targetDir : harnessDir(targetDir);
+  const ziplineDirPath = opts.global ? targetDir : ziplineDir(targetDir);
   const rulesDirPath = opts.global
     ? path.join(targetDir, "rules")
     : rulesDir(targetDir);
 
-  if (fs.existsSync(harnessDirPath)) {
-    console.error(`Already initialized: ${harnessDirPath}`);
+  if (fs.existsSync(ziplineDirPath)) {
+    console.error(`Already initialized: ${ziplineDirPath}`);
     process.exit(1);
   }
 
   // Create directory structure
-  fs.mkdirSync(harnessDirPath, { recursive: true });
+  fs.mkdirSync(ziplineDirPath, { recursive: true });
   fs.mkdirSync(rulesDirPath, { recursive: true });
 
   // Write sample rules
@@ -61,7 +61,7 @@ function initCommand(opts: { global?: boolean } = {}) {
   // Create empty ledger
   const ledgerFile = opts.global
     ? path.join(targetDir, "ledger.jsonl")
-    : path.join(harnessDirPath, "ledger.jsonl");
+    : path.join(ziplineDirPath, "ledger.jsonl");
   fs.writeFileSync(ledgerFile, "");
 
   if (!opts.global) {
@@ -84,30 +84,30 @@ function initCommand(opts: { global?: boolean } = {}) {
     fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
 
     // Write README
-    fs.writeFileSync(path.join(targetDir, "HARNESS_README.md"), README);
+    fs.writeFileSync(path.join(targetDir, "ZIPLINE_README.md"), README);
 
-    console.log(`Harness initialized in ${targetDir}`);
+    console.log(`Zipline initialized in ${targetDir}`);
     console.log(`\nCreated:`);
-    console.log(`  .harness/rules/        (${Object.keys(SAMPLE_RULES).length} sample rules)`);
-    console.log(`  .harness/policy.yaml   (routing policy)`);
-    console.log(`  .harness/ledger.jsonl  (empty log)`);
+    console.log(`  .zipline/rules/        (${Object.keys(SAMPLE_RULES).length} sample rules)`);
+    console.log(`  .zipline/policy.yaml   (routing policy)`);
+    console.log(`  .zipline/ledger.jsonl  (empty log)`);
     console.log(`  .claude/settings.json  (hook configured)`);
-    console.log(`  HARNESS_README.md      (usage guide)`);
-    console.log(`\nNext: Just use Claude Code normally. Harness will compile context transparently.`);
+    console.log(`  ZIPLINE_README.md      (usage guide)`);
+    console.log(`\nNext: Just use Claude Code normally. Zipline will compile context transparently.`);
   } else {
-    console.log(`Global harness initialized in ${targetDir}`);
+    console.log(`Global zipline initialized in ${targetDir}`);
     console.log(`\nCreated:`);
-    console.log(`  ~/.harness/rules/      (${Object.keys(SAMPLE_RULES).length} sample rules)`);
-    console.log(`  ~/.harness/policy.yaml (routing policy)`);
-    console.log(`  ~/.harness/ledger.jsonl (empty log)`);
+    console.log(`  ~/.zipline/rules/      (${Object.keys(SAMPLE_RULES).length} sample rules)`);
+    console.log(`  ~/.zipline/policy.yaml (routing policy)`);
+    console.log(`  ~/.zipline/ledger.jsonl (empty log)`);
     console.log(`\nNote: Global mode creates shared rules/policy but no project hooks.`);
   }
 }
 
 function reportCommand(opts: { global?: boolean } = {}) {
   const root = opts.global
-    ? path.join(process.env.HOME || "~", ".harness")
-    : requireHarnessRoot();
+    ? path.join(process.env.HOME || "~", ".zipline")
+    : requireZiplineRoot();
 
   const entries = readLedger(root);
   if (entries.length === 0) {
@@ -123,7 +123,7 @@ function reportCommand(opts: { global?: boolean } = {}) {
         100
       : 0;
 
-  console.log(`Harness Report (${opts.global ? "global" : root})`);
+  console.log(`Zipline Report (${opts.global ? "global" : root})`);
   console.log(`${"=".repeat(60)}`);
   console.log(`Total runs:       ${report.totalRuns}`);
   console.log(
@@ -152,7 +152,7 @@ function reportCommand(opts: { global?: boolean } = {}) {
 }
 
 function compileCommand(objective: string, tags: string[]) {
-  const root = requireHarnessRoot();
+  const root = requireZiplineRoot();
 
   const fullBundle = fullContextBundle(objective, root);
   const compiledBundle = compile(objective, tags, tags, root);
@@ -172,19 +172,19 @@ function compileCommand(objective: string, tags: string[]) {
 
 function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
   const targetDir = opts.global
-    ? path.join(process.env.HOME || "~", ".harness")
+    ? path.join(process.env.HOME || "~", ".zipline")
     : process.cwd();
 
-  const harnessDirPath = opts.global ? targetDir : harnessDir(targetDir);
+  const ziplineDirPath = opts.global ? targetDir : ziplineDir(targetDir);
 
-  if (!fs.existsSync(harnessDirPath)) {
-    console.error(`Harness not initialized in ${targetDir}`);
+  if (!fs.existsSync(ziplineDirPath)) {
+    console.error(`Zipline not initialized in ${targetDir}`);
     process.exit(1);
   }
 
   // Warn if ledger has data
   if (!opts.global) {
-    const ledgerFile = path.join(harnessDirPath, "ledger.jsonl");
+    const ledgerFile = path.join(ziplineDirPath, "ledger.jsonl");
     if (fs.existsSync(ledgerFile)) {
       const lines = fs.readFileSync(ledgerFile, "utf8").split("\n").filter((l) => l.trim());
       if (lines.length > 0 && !opts.force) {
@@ -195,9 +195,9 @@ function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
     }
   }
 
-  // Remove .harness/
-  fs.rmSync(harnessDirPath, { recursive: true, force: true });
-  console.log(`Removed: ${harnessDirPath}`);
+  // Remove .zipline/
+  fs.rmSync(ziplineDirPath, { recursive: true, force: true });
+  console.log(`Removed: ${ziplineDirPath}`);
 
   if (!opts.global) {
     // Remove hook from .claude/settings.json
@@ -205,8 +205,8 @@ function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
     if (fs.existsSync(settingsFile)) {
       try {
         const settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
-        // Strip only harness's own command entries, preserving user-added hooks.
-        // Covers both hooks harness registers (intercept + compress-output).
+        // Strip only zipline's own command entries, preserving user-added hooks.
+        // Covers both hooks zipline registers (intercept + compress-output).
         const ourCommands = [HOOK_COMMAND, POST_TOOL_COMMAND];
         let changed = false;
         for (const event of [HOOK_EVENT, POST_TOOL_EVENT]) {
@@ -239,15 +239,15 @@ function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
       }
     }
 
-    // Remove HARNESS_README.md if it exists
-    const readmePath = path.join(targetDir, "HARNESS_README.md");
+    // Remove ZIPLINE_README.md if it exists
+    const readmePath = path.join(targetDir, "ZIPLINE_README.md");
     if (fs.existsSync(readmePath)) {
       fs.unlinkSync(readmePath);
       console.log(`Removed: ${readmePath}`);
     }
   }
 
-  console.log(`\nHarness uninstalled from ${opts.global ? "global" : targetDir}`);
+  console.log(`\nZipline uninstalled from ${opts.global ? "global" : targetDir}`);
 }
 
 function readStdin(): Promise<string> {
@@ -271,10 +271,10 @@ function interceptCommand() {
 }
 
 function doctorCommand() {
-  const root = requireHarnessRoot();
+  const root = requireZiplineRoot();
   const env = detectRepoEnv(root);
 
-  console.log("Harness Integrations");
+  console.log("Zipline Integrations");
   console.log("─".repeat(52));
   for (const cap of CAPABILITIES) {
     const a = resolveAvailability(cap, root, env);
@@ -287,7 +287,7 @@ function doctorCommand() {
 
   // Capability net-delta over recent ledger entries. This is the CAPABILITY
   // delta only (input tokens before vs after each capability transform) — it is
-  // NOT the M1 compiler savings (baseline_tokens vs tokens_in), which `harness
+  // NOT the M1 compiler savings (baseline_tokens vs tokens_in), which `zipline
   // report` shows. Kept separate so the two are never double-counted.
   const caps = readLedger(root)
     .flatMap((e) => e.capabilities ?? [])
@@ -299,14 +299,14 @@ function doctorCommand() {
     const pct = before > 0 ? (((before - after) / before) * 100).toFixed(1) : "0";
     console.log("");
     console.log(
-      `Capability net delta (last ${recent.length} runs): ${pct}%  [capability transforms only; separate from compiler savings in 'harness report']`
+      `Capability net delta (last ${recent.length} runs): ${pct}%  [capability transforms only; separate from compiler savings in 'zipline report']`
     );
   } else {
     console.log("");
     console.log("Capability net delta: no capability runs logged yet.");
   }
 
-  // Optional orchestration layer (gstack). Detected, never invoked — harness's
+  // Optional orchestration layer (gstack). Detected, never invoked — zipline's
   // job is token accounting; gstack owns multi-agent orchestration leaves.
   // Honest degradation: if it isn't installed, we say so and nothing breaks.
   console.log("");
@@ -336,7 +336,7 @@ function main() {
 
       case "compile": {
         if (args.length < 2) {
-          console.error('Usage: harness compile "objective" tag1,tag2,tag3');
+          console.error('Usage: zipline compile "objective" tag1,tag2,tag3');
           process.exit(1);
         }
         const objective = args[0];
@@ -357,7 +357,7 @@ function main() {
         break;
 
       case "policy": {
-        const root = requireHarnessRoot();
+        const root = requireZiplineRoot();
         const sub = args[0];
         if (sub === "push") {
           const r = pushPolicy(root);
@@ -369,7 +369,7 @@ function main() {
           console.log(`Updated ${r.changed.length} step(s): ${r.changed.join(", ") || "none"}`);
           console.log(`Per-repo overrides preserved.`);
         } else {
-          console.error("Usage: harness policy <pull|push>");
+          console.error("Usage: zipline policy <pull|push>");
           console.error(`Central store: ${centralPolicyPath()}`);
           process.exit(1);
         }
@@ -377,7 +377,7 @@ function main() {
       }
 
       case "learn": {
-        const root = requireHarnessRoot();
+        const root = requireZiplineRoot();
         const proposals = proposeChanges(readLedger(root));
         console.log(renderProposals(proposals));
         if (args.includes("--apply")) {
@@ -386,7 +386,7 @@ function main() {
           // the reviewable artifact; auto-writing rules is deferred.)
           console.log(
             `\n--apply given: ${proposals.length} change(s) staged for approval. ` +
-              `Review above, then edit .harness/rules/ accordingly. ` +
+              `Review above, then edit .zipline/rules/ accordingly. ` +
               `(Automatic rule rewriting is deferred; proposals stay human-approved.)`
           );
         }
@@ -402,26 +402,26 @@ function main() {
         break;
 
       default:
-        console.log(`Harness — deterministic orchestration spine for Claude Code
+        console.log(`Zipline — deterministic orchestration spine for Claude Code
 
 Usage:
-  harness init [--global]         Initialize .harness/ in current dir (or ~/.harness/)
-  harness report [--global]       Show token savings and system metrics
-  harness compile "goal" tags     Compile context bundle for a step
-  harness doctor                  Show integrations stack + per-repo availability
-  harness policy <pull|push>      Sync routing policy with the central store (repo overrides win)
-  harness learn [--apply]         Propose rule changes from ledger evidence (proposal-only without --apply)
-  harness uninstall [--global] [--force]  Remove .harness/ and hooks
-  harness intercept               (Internal: called by Claude Code hook)
+  zipline init [--global]         Initialize .zipline/ in current dir (or ~/.zipline/)
+  zipline report [--global]       Show token savings and system metrics
+  zipline compile "goal" tags     Compile context bundle for a step
+  zipline doctor                  Show integrations stack + per-repo availability
+  zipline policy <pull|push>      Sync routing policy with the central store (repo overrides win)
+  zipline learn [--apply]         Propose rule changes from ledger evidence (proposal-only without --apply)
+  zipline uninstall [--global] [--force]  Remove .zipline/ and hooks
+  zipline intercept               (Internal: called by Claude Code hook)
 
 Examples:
-  harness init                    # Set up harness in current project
-  harness report                  # View stats for current project
-  harness compile "fix auth bug" typescript,security,testing
-  harness uninstall               # Remove harness from current project
-  harness uninstall --force       # Remove even if ledger has data
+  zipline init                    # Set up zipline in current project
+  zipline report                  # View stats for current project
+  zipline compile "fix auth bug" typescript,security,testing
+  zipline uninstall               # Remove zipline from current project
+  zipline uninstall --force       # Remove even if ledger has data
 
-After init, harness runs transparently — just use Claude Code normally.
+After init, zipline runs transparently — just use Claude Code normally.
 `);
         process.exit(command ? 1 : 0);
     }

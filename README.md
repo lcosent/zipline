@@ -1,15 +1,15 @@
-# harness
+# zipline
 
 <div align="center">
 
 **Cut your Claude Code token bill by ~65% — automatically.**
 
-[![npm version](https://img.shields.io/npm/v/harness.svg?style=flat-square)](https://www.npmjs.com/package/harness)
+[![npm version](https://img.shields.io/npm/v/zipline.svg?style=flat-square)](https://www.npmjs.com/package/zipline)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](https://github.com/lcosent/harness)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](https://github.com/lcosent/zipline)
 
-Instead of sending your whole `CLAUDE.md` on every prompt, harness sends only the
+Instead of sending your whole `CLAUDE.md` on every prompt, zipline sends only the
 rules that matter for the task at hand — and proves the savings on every run.
 
 [Get started in 2 minutes](#get-started-in-2-minutes) • [Why use it](#why-youll-want-it) • [Commands](#command-reference) • [How it works](#how-it-works)
@@ -23,18 +23,18 @@ rules that matter for the task at hand — and proves the savings on every run.
 - 💸 **Spend ~65% fewer input tokens.** Median **63.2%** reduction across real runs — every prompt carries only the relevant rules, not your entire `CLAUDE.md`.
 - ⚡ **Get faster responses.** Less context in means less to process. Noisy command output (build logs, stack traces) is compressed before it ever reaches the model.
 - 🎯 **Pay for the right model.** Simple steps route to Haiku, judgment calls to Sonnet, hard design work to Opus — chosen automatically, escalated only when needed.
-- 📊 **See exactly where your tokens go.** Every operation is logged with its baseline vs. actual cost. Run `harness report` and get real numbers, not vibes.
-- 🔌 **Zero workflow change.** After a one-time `harness init`, you keep using Claude Code exactly as before. Harness works transparently in the background.
+- 📊 **See exactly where your tokens go.** Every operation is logged with its baseline vs. actual cost. Run `zipline report` and get real numbers, not vibes.
+- 🔌 **Zero workflow change.** After a one-time `zipline init`, you keep using Claude Code exactly as before. Zipline works transparently in the background.
 - 🧰 **No API key, no lock-in.** Runs on your existing Claude Code subscription. Pure TypeScript, no bundled tools, no hard dependencies.
 
-> **The claim, stated so you can falsify it:** harness saves **≥60% input tokens** vs. full-context at **≥90% pass-rate**. The ledger is the receipt.
+> **The claim, stated so you can falsify it:** zipline saves **≥60% input tokens** vs. full-context at **≥90% pass-rate**. The ledger is the receipt.
 
 ---
 
 ## Before & after
 
 <table>
-<tr><th>Without harness</th><th>With harness</th></tr>
+<tr><th>Without zipline</th><th>With zipline</th></tr>
 <tr><td>
 
 ```
@@ -56,7 +56,7 @@ Claude receives your ENTIRE CLAUDE.md:
 ```
 You: fix the auth bug
 
-Harness compiles just what's relevant:
+Zipline compiles just what's relevant:
   ✓ TypeScript style
   ✓ Security guidelines
   ✓ Testing practices
@@ -75,17 +75,17 @@ Logged: baseline=2800 → 920 (67.1%)
 **1. Install**
 
 ```bash
-npm install -g harness
+npm install -g zipline
 ```
 
 **2. Set it up in your project** (one time)
 
 ```bash
 cd my-project
-harness init
+zipline init
 ```
 
-This creates a `.harness/` folder with 6 starter rules, a routing policy, and an
+This creates a `.zipline/` folder with 6 starter rules, a routing policy, and an
 empty ledger — and wires a Claude Code hook so everything runs automatically.
 
 **3. Use Claude Code exactly like you always do**
@@ -94,7 +94,7 @@ empty ledger — and wires a Claude Code hook so everything runs automatically.
 claude> fix the auth bug
 ```
 
-Behind the scenes, harness quietly:
+Behind the scenes, zipline quietly:
 1. Reads your prompt and picks only the relevant rules
 2. Compiles a minimal context bundle (e.g. `security` + `typescript` + `testing`)
 3. Routes to the right model tier for the task
@@ -103,11 +103,11 @@ Behind the scenes, harness quietly:
 **4. See what you saved**
 
 ```bash
-harness report
+zipline report
 ```
 
 ```
-Harness Report (/Users/you/my-project)
+Zipline Report (/Users/you/my-project)
 ============================================================
 Total runs:       47
 Pass rate:        44/47 (93.6%)
@@ -130,7 +130,7 @@ That's it. No other change to how you work.
 
 ## What it does for you, day to day
 
-Once initialized, harness runs on autopilot. Every prompt gets the treatment:
+Once initialized, zipline runs on autopilot. Every prompt gets the treatment:
 
 ```bash
 # Implementation task
@@ -148,7 +148,7 @@ claude> rebase this branch
 
 ### Tailor it to your codebase
 
-Rules are just markdown files in `.harness/rules/`, one concern per file. Add
+Rules are just markdown files in `.zipline/rules/`, one concern per file. Add
 your own conventions and tag them — the compiler pulls them in when a prompt
 touches that concern:
 
@@ -162,10 +162,10 @@ Use parameterized queries. Check authorization at every handler.
 
 ### Preview a compilation without spending a token
 
-Curious what harness *would* send for a given task? Ask it directly:
+Curious what zipline *would* send for a given task? Ask it directly:
 
 ```bash
-harness compile "fix auth bug" "typescript,security,testing"
+zipline compile "fix auth bug" "typescript,security,testing"
 ```
 
 ```
@@ -180,11 +180,11 @@ Rules excluded:   commits.md, git-safety.md, react-ui.md
 
 ### Let it orchestrate a whole feature
 
-For bigger work, hand harness the full loop — it debates a design, breaks it into
+For bigger work, hand zipline the full loop — it debates a design, breaks it into
 milestones, builds each one, and runs two independent reviewers before calling it done:
 
 ```bash
-claude> /harness build "add user authentication with JWT"
+claude> /zipline build "add user authentication with JWT"
 ```
 
 ```
@@ -201,7 +201,7 @@ RESULT  → design doc + implementation + verification report
 
 ## Works with the tools you already have
 
-Harness automatically uses best-in-class efficiency tools when they're present —
+Zipline automatically uses best-in-class efficiency tools when they're present —
 **you never pick or invoke one.** Each capability has a built-in TypeScript
 implementation that's always on (zero setup), and quietly upgrades to a faster
 external tool when it detects one. Nothing is bundled; there are no hard deps.
@@ -217,11 +217,11 @@ external tool when it detects one. Nothing is bundled; there are no hard deps.
 Check what's active in any repo:
 
 ```bash
-harness doctor
+zipline doctor
 ```
 
 ```
-Harness Integrations
+Zipline Integrations
 ────────────────────────────────────────────────────
 ✓ output-compress  native + rtk (accelerator)
 ✓ terse-output     native (prompt fragment)
@@ -250,42 +250,42 @@ capabilities simply report `inactive here` instead of erroring — nothing break
 
 | Command | What it does |
 |---------|--------------|
-| `harness init [--global]` | Set up harness in the current project (or globally in `~/.harness/`) |
-| `harness report [--global]` | Show your token savings and system metrics |
-| `harness doctor` | Show which integrations are active in this repo |
-| `harness compile "goal" tags` | Preview the compiled context for a task — spends no tokens |
-| `harness policy <pull\|push>` | Share a tuned routing policy across repos (local overrides always win) |
-| `harness learn [--apply]` | Suggest rule improvements from your ledger (preview-only without `--apply`) |
-| `harness uninstall [--global] [--force]` | Cleanly remove harness and its hooks (warns if you have logged data) |
+| `zipline init [--global]` | Set up zipline in the current project (or globally in `~/.zipline/`) |
+| `zipline report [--global]` | Show your token savings and system metrics |
+| `zipline doctor` | Show which integrations are active in this repo |
+| `zipline compile "goal" tags` | Preview the compiled context for a task — spends no tokens |
+| `zipline policy <pull\|push>` | Share a tuned routing policy across repos (local overrides always win) |
+| `zipline learn [--apply]` | Suggest rule improvements from your ledger (preview-only without `--apply`) |
+| `zipline uninstall [--global] [--force]` | Cleanly remove zipline and its hooks (warns if you have logged data) |
 
 **Removing it is just as clean:**
 
 ```bash
-harness uninstall
+zipline uninstall
 # Warning: Ledger has 47 entries. Data will be lost.
 # Use --force to proceed.
 
-harness uninstall --force
-# Removed .harness/ and the hook from .claude/settings.json
+zipline uninstall --force
+# Removed .zipline/ and the hook from .claude/settings.json
 ```
 
 ---
 
 ## How it works
 
-Harness is a small TypeScript spine that runs both as a CLI and as a Claude Code
+Zipline is a small TypeScript spine that runs both as a CLI and as a Claude Code
 hook. Five parts, each doing one job:
 
 ```mermaid
 flowchart LR
-    subgraph spine["harness spine"]
+    subgraph spine["zipline spine"]
         C["COMPILER<br/>pick minimal rules"] --> R["ROUTER<br/>choose model tier"] --> L["LOOP<br/>build & verify"] --> LG["LEDGER<br/>log the savings"]
     end
     P["your prompt<br/>(UserPromptSubmit hook)"] --> C
     C -.enrich.-> I["integrations<br/>compress · symbol-query · doc-fetch<br/>terse · decision-log"]
     I -.accelerator.-> X["rtk (PATH)<br/>Context7 / LSP-MCP (detected)"]
     I --> LG
-    LG --> S[".harness/ledger.jsonl<br/>provable savings, per run"]
+    LG --> S[".zipline/ledger.jsonl<br/>provable savings, per run"]
 
     classDef s fill:#1e3a5f,stroke:#4a90d9,color:#fff
     classDef i fill:#2d4a2d,stroke:#5cb85c,color:#fff
@@ -296,14 +296,14 @@ flowchart LR
 - **Compiler** — turns *goal + tags* into the smallest context bundle that still covers the task. Refuses to silently drop a required rule.
 - **Router** — maps each step to a model tier (Haiku / Sonnet / Opus), escalates on failure, auto-demotes a tier whose fail-rate climbs past 40%.
 - **Contracts** — typed (Zod) inputs and outputs, with one automatic repair retry on a malformed response.
-- **Loop** — the `design → plan → gate → build → verify` orchestration behind `/harness build`.
-- **Ledger** — an append-only `.harness/ledger.jsonl` recording `tokens_in`, `baseline_tokens`, tier, and outcome for every operation. This is what makes the savings *provable* rather than claimed.
+- **Loop** — the `design → plan → gate → build → verify` orchestration behind `/zipline build`.
+- **Ledger** — an append-only `.zipline/ledger.jsonl` recording `tokens_in`, `baseline_tokens`, tier, and outcome for every operation. This is what makes the savings *provable* rather than claimed.
 
 <details>
-<summary><b>What lives in <code>.harness/</code></b></summary>
+<summary><b>What lives in <code>.zipline/</code></b></summary>
 
 ```
-.harness/
+.zipline/
   ├─ rules/           one .md file per concern, frontmatter-tagged
   ├─ policy.yaml      step → model tier (auto-tuned over time)
   └─ ledger.jsonl     every operation logged, for reporting & learning
@@ -341,20 +341,20 @@ design-synthesis:   opus     # quality dominates cost
 </details>
 
 <details>
-<summary><b>Use harness as a library</b></summary>
+<summary><b>Use zipline as a library</b></summary>
 
 The public API is a stable, versioned surface (semver — nothing removed within
 `1.x` without a major bump):
 
 ```ts
-import { compile, tokenCount, readLedger, buildReport } from "harness";
+import { compile, tokenCount, readLedger, buildReport } from "zipline";
 
 const bundle = compile("fix auth bug", ["typescript", "security"]);
 console.log(tokenCount(bundle));            // compiled token count
 console.log(buildReport(readLedger()));     // savings, tier mix, pass rate
 ```
 
-The CLI entry point is available separately at `harness/cli`.
+The CLI entry point is available separately at `zipline/cli`.
 
 </details>
 
@@ -365,13 +365,13 @@ Full diagrams (system overview, request data-flow, capability selection) are in
 
 ## Proven, not promised
 
-Harness ships with a deterministic, offline test suite — every claim above is
+Zipline ships with a deterministic, offline test suite — every claim above is
 backed by a passing gate you can run yourself:
 
 ```bash
 npm test                      # full suite: compiler savings, routing, contracts,
                               # loop, learning, integrations, hook performance
-HARNESS_LIVE=1 npm run test:m10   # opt-in: exercise a real Claude subscription call
+ZIPLINE_LIVE=1 npm run test:m10   # opt-in: exercise a real Claude subscription call
 ```
 
 | Metric | Value |
@@ -417,13 +417,13 @@ performance.
 - **Typed contracts (M3)** — Zod I/O schemas, one repair retry, 100% valid-output rate.
 - **Orchestration loop (M4)** — design (multi-agent debate) → plan → gate → build → verify (two reviewers).
 - **Self-learning (M5)** — policy tuning from ≥100 ledger runs; 75% of starting cost after tuning.
-- **Token dashboard (M6)** — `harness report` with regression detection and ledger reconciliation.
-- **Cross-project policy (M7, M13)** — shared, versioned policy; `harness policy pull/push`, repo overrides win.
-- **Integrations layer (M8)** — 5 native capabilities + accelerators + `harness doctor`.
+- **Token dashboard (M6)** — `zipline report` with regression detection and ledger reconciliation.
+- **Cross-project policy (M7, M13)** — shared, versioned policy; `zipline policy pull/push`, repo overrides win.
+- **Integrations layer (M8)** — 5 native capabilities + accelerators + `zipline doctor`.
 - **Real LLM calls (M10)** — runs on your `claude` CLI subscription; deterministic offline stub.
 - **Output compression (M11)** — shrinks real Bash output before it reaches the model.
 - **terse auto-disable + A/B (M12, M17)** — measures terse's true output delta and disables it if net-negative.
-- **Continuous learning (M14)** — `harness learn` proposes rule changes from ledger evidence (preview-only).
+- **Continuous learning (M14)** — `zipline learn` proposes rule changes from ledger evidence (preview-only).
 - **Stable API + versioned ledger (M16)**, **optional gstack detection (M18)**, **hook performance budget (M19)**.
 
 </details>
@@ -445,6 +445,6 @@ Code builds faster, cheaper, and more observable.
 
 <div align="center">
 
-**[⬆ back to top](#harness)** · Made with ☕ by [Luca](https://github.com/lcosent)
+**[⬆ back to top](#zipline)** · Made with ☕ by [Luca](https://github.com/lcosent)
 
 </div>

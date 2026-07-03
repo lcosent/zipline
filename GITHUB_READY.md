@@ -1,4 +1,4 @@
-# 🚀 Harness — GitHub Ready Checklist
+# 🚀 Zipline — GitHub Ready Checklist
 
 **Status:** ✅ Ready to publish  
 **Date:** 2026-07-03  
@@ -87,11 +87,11 @@ orchestration, anthropic, typescript, productivity, cost-savings
 - [ ] Verify CI passes
 
 ### Optional: npm Publishing
-- [ ] Check if `harness` name available on npm
-- [ ] Consider scoped package: `@username/harness`
+- [ ] Check if `zipline` name available on npm
+- [ ] Consider scoped package: `@username/zipline`
 - [ ] Login to npm: `npm login`
 - [ ] Publish: `npm publish`
-- [ ] Verify installation: `npm install -g harness`
+- [ ] Verify installation: `npm install -g zipline`
 
 ---
 
@@ -99,18 +99,18 @@ orchestration, anthropic, typescript, productivity, cost-savings
 
 Replace `YOUR_USERNAME` with your GitHub username:
 
-- Repository: `https://github.com/YOUR_USERNAME/harness`
-- Issues: `https://github.com/YOUR_USERNAME/harness/issues`
-- Pull Requests: `https://github.com/YOUR_USERNAME/harness/pulls`
-- Actions: `https://github.com/YOUR_USERNAME/harness/actions`
-- Releases: `https://github.com/YOUR_USERNAME/harness/releases`
+- Repository: `https://github.com/YOUR_USERNAME/zipline`
+- Issues: `https://github.com/YOUR_USERNAME/zipline/issues`
+- Pull Requests: `https://github.com/YOUR_USERNAME/zipline/pulls`
+- Actions: `https://github.com/YOUR_USERNAME/zipline/actions`
+- Releases: `https://github.com/YOUR_USERNAME/zipline/releases`
 
 ---
 
 ## 📦 Files Ready for GitHub
 
 ```
-harness/
+zipline/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.md
@@ -118,7 +118,7 @@ harness/
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── workflows/
 │       └── ci.yml
-├── .harness/
+├── .zipline/
 │   ├── rules/                 (6 sample rules)
 │   └── policy.yaml
 ├── src/                       (18 TypeScript files)
@@ -147,7 +147,7 @@ harness/
 Go to: https://github.com/new
 
 Settings:
-- **Name:** harness
+- **Name:** zipline
 - **Description:** (copy from above)
 - **Visibility:** Public (recommended) or Private
 - **Initialize:** ❌ NO README, ❌ NO .gitignore, ❌ NO license
@@ -155,10 +155,10 @@ Settings:
 ### 2. Connect and Push
 
 ```bash
-cd /Users/luca/Documents/coding/Infra/harness
+cd /Users/luca/Documents/coding/Infra/zipline
 
 # Add remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/harness.git
+git remote add origin https://github.com/YOUR_USERNAME/zipline.git
 
 # Push
 git push -u origin master
@@ -209,19 +209,19 @@ Once published:
 
 ### Social Media
 ```
-🚀 Just released Harness v0.1.0 — save 60-70% of @AnthropicAI Claude Code tokens!
+🚀 Just released Zipline v0.1.0 — save 60-70% of @AnthropicAI Claude Code tokens!
 
 ✅ Compiles minimal context (not full CLAUDE.md)
 ✅ Smart routing (Haiku/Sonnet/Opus)
 ✅ Learning from runs
 ✅ All milestones passing
 
-github.com/YOUR_USERNAME/harness
+github.com/YOUR_USERNAME/zipline
 ```
 
 ### Communities
 - Reddit: r/ClaudeAI, r/programming, r/typescript
-- Hacker News: "Show HN: Harness – Save 60-70% of Claude Code tokens"
+- Hacker News: "Show HN: Zipline – Save 60-70% of Claude Code tokens"
 - Dev.to: Write a blog post with before/after examples
 - Twitter/X: Tag @AnthropicAI
 - LinkedIn: Share in AI/dev groups

@@ -1,4 +1,4 @@
-# Harness Backlog
+# Zipline Backlog
 
 Ordered, data-driven milestone queue. `/loop` reads this top-down, picks the
 first item whose status is `TODO` and whose `blocked-by` are all `DONE`, executes
@@ -13,14 +13,14 @@ condition for the item (no "looks good").
 ## M10 — Real LLM calls (via claude CLI subscription, no API key)
 
 - **status:** DONE — `src/llm.ts callModel` shells to `claude -p` on subscription;
-  deterministic offline stub under `HARNESS_SIMULATE=1`; m4-loop logs real
+  deterministic offline stub under `ZIPLINE_SIMULATE=1`; m4-loop logs real
   `tokens_out` (not hardcoded). m10-test 7/7, claude CLI 2.1.199 detected live.
 - **blocked-by:** —
 - **why:** `m4-loop.ts` decides pass/fail with `Math.random()` and hardcodes
   `tokens_out`. Every downstream claim (net-delta, auto-disable) needs real traffic.
 - **build:** `src/llm.ts` — `callModel(prompt, tier)` shells out to the `claude`
   CLI in headless mode (`claude -p --model <haiku|sonnet|opus> --output-format json`),
-  running on the user's subscription (NOT a paid API key). `HARNESS_SIMULATE=1` or a
+  running on the user's subscription (NOT a paid API key). `ZIPLINE_SIMULATE=1` or a
   missing `claude` binary → deterministic offline stub. Route `buildStep`/`verifyStep`
   through it; log real `tokens_out`.
 - **success:** `npm run test:m10` passes — simulate mode is deterministic and offline
@@ -29,16 +29,16 @@ condition for the item (no "looks good").
 
 ## M11 — PostToolUse compression of real Bash output
 
-- **status:** DONE — `harness compress-output` reads PostToolUse JSON, compresses
+- **status:** DONE — `zipline compress-output` reads PostToolUse JSON, compresses
   `tool_response.stdout` via M8 native, emits `updatedToolOutput` (replaces the
   model's view; side effects already ran). init registers a Bash-matched
-  PostToolUse hook; uninstall strips both harness hooks, preserves user hooks.
+  PostToolUse hook; uninstall strips both zipline hooks, preserves user hooks.
   m11-test 7/7, 62.7% reduction; e2e envelope verified.
 - **blocked-by:** —
 
 ## M12 — terse-output live auto-disable
 
-- **status:** DONE — `resolveAvailability` overlays disable state so `harness
+- **status:** DONE — `resolveAvailability` overlays disable state so `zipline
   doctor` shows `disabled` (fixed the M8 gap where doctor ignored shouldDisable);
   terse wired through `runCapability` in the loop. m12-test 6/6; doctor live-verified
   to show `✗ terse-output auto-disabled` on net-negative history. True output-delta
@@ -49,24 +49,24 @@ condition for the item (no "looks good").
 - **build:** Log terse's real output-token delta once M10 lands; feed it into the
   existing `shouldDisable` window.
 - **success:** `npm run test:m12` passes — a seeded run of net-negative terse
-  deltas flips terse to `disabled` in `harness doctor`.
+  deltas flips terse to `disabled` in `zipline doctor`.
 
 ## M13 — Cross-project policy sync
 
-- **status:** DONE — `harness policy pull|push` against a central store
-  (`$HARNESS_POLICY_REMOTE` or `~/.harness/policy.yaml`). push=local wins,
+- **status:** DONE — `zipline policy pull|push` against a central store
+  (`$ZIPLINE_POLICY_REMOTE` or `~/.zipline/policy.yaml`). push=local wins,
   pull=repo overrides preserved; provenance logged. Flat parser, no YAML dep.
   m13-test 8/8 (round-trip, override survives, provenance).
 - **blocked-by:** —
 - **why:** M7 proved a shared policy generalizes; there's no transport yet.
-- **build:** `harness policy pull|push` against a versioned central policy file
+- **build:** `zipline policy pull|push` against a versioned central policy file
   (local path or git remote); per-repo overrides layered on top; provenance logged.
 - **success:** `npm run test:m13` passes — push then pull round-trips a policy;
   a per-repo override survives a pull; provenance recorded in the ledger.
 
 ## M14 — Continuous-learning pipeline
 
-- **status:** DONE — `harness learn` mines the ledger → deterministic rule
+- **status:** DONE — `zipline learn` mines the ledger → deterministic rule
   proposals: DE-PRIORITIZE (excluded ≥80%, 0 failure cost) and PIN (absence
   fail-rate exceeds presence by ≥30pts). Proposal-only; writes nothing without
   `--apply` (verified rules/ unchanged). m14-test 7/7.
@@ -82,7 +82,7 @@ condition for the item (no "looks good").
 ## M15 — Live-path validation (full execution, not just simulate)
 
 - **status:** DONE — opt-in live gate in `src/m10-test.ts`. Demonstrated BOTH
-  states: offline `npm run test:m10` → 7/7, live gate SKIPPED (green); `HARNESS_LIVE=1`
+  states: offline `npm run test:m10` → 7/7, live gate SKIPPED (green); `ZIPLINE_LIVE=1`
   → 8/8 with a REAL subscription call returning `source=claude-cli tokens_out=97`.
   Also validated `callModel` directly against the live CLI (real envelope: `result`
   string + `usage.output_tokens` — matches the parser). This is full execution,
@@ -108,14 +108,14 @@ condition for the item (no "looks good").
 ## M17 — terse-output live A/B output-delta measurement
 
 - **status:** DONE — `integrations/terse-ab.ts` runs a paired no-terse-vs-terse
-  call, returns the signed OUTPUT delta; `HARNESS_TERSE_AB=1` wires it into the
+  call, returns the signed OUTPUT delta; `ZIPLINE_TERSE_AB=1` wires it into the
   loop; delta feeds the existing `shouldDisable` window. m17-test 7/7.
 - **blocked-by:** M16 (DONE)
 
 ## M18 — Optional gstack integration (orchestration leaves)
 
 - **status:** DONE — `RepoEnv.gstackInstalled` detects gstack (`$GSTACK_HOME` or
-  `~/.claude/skills/gstack`); `harness doctor` shows an Orchestration section;
+  `~/.claude/skills/gstack`); `zipline doctor` shows an Orchestration section;
   detected-never-invoked, absence degrades honestly. m18-test 5/5.
 - **blocked-by:** —
 
@@ -131,14 +131,14 @@ condition for the item (no "looks good").
 ## Done
 
 - M0-M7 — core spine (autonomy, compiler, router, contracts, loop, learning, dashboard, cross-project).
-- M8 — integrations layer (5 native capabilities + `harness doctor`) + connect-the-pipe intercept.
+- M8 — integrations layer (5 native capabilities + `zipline doctor`) + connect-the-pipe intercept.
 - M9 — docs (Mermaid architecture diagrams).
 - M10 — real LLM calls via claude CLI subscription (no API key) + deterministic simulate stub.
-- M11 — PostToolUse compression of real Bash output (`harness compress-output`).
-- M12 — terse-output auto-disable, observable in `harness doctor`.
-- M13 — cross-project policy sync (`harness policy pull/push`).
-- M14 — continuous-learning pipeline (`harness learn`, proposal-only).
-- M15 — live-path validation gate (real subscription call, opt-in via HARNESS_LIVE=1).
+- M11 — PostToolUse compression of real Bash output (`zipline compress-output`).
+- M12 — terse-output auto-disable, observable in `zipline doctor`.
+- M13 — cross-project policy sync (`zipline policy pull/push`).
+- M14 — continuous-learning pipeline (`zipline learn`, proposal-only).
+- M15 — live-path validation gate (real subscription call, opt-in via ZIPLINE_LIVE=1).
 - M16 — stable public API surface + versioned ledger schema (v1 gate).
 - M17 — terse-output A/B output-delta measurement (v1 gate).
 - M18 — optional gstack integration, honest degradation (v1 gate).

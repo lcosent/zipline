@@ -6,7 +6,7 @@ import { Capability, CapabilityAvailability, CapabilityResult, RepoEnv } from ".
 // doc-fetch: instead of the model reading a whole dependency folder, return a
 // compressed snippet of the package's README + its type surface (.d.ts head).
 // Native, Node-only (needs node_modules). Context7 MCP is the user-wired
-// accelerator harness only detects and surfaces (it can't invoke MCP itself).
+// accelerator zipline only detects and surfaces (it can't invoke MCP itself).
 
 const README_CHAR_CAP = 1200;
 const DTS_LINE_CAP = 40;

@@ -1,5 +1,5 @@
 {
-  "name": "harness",
+  "name": "zipline",
   "version": "1.0.0",
   "description": "Save 60-70% of Claude Code input tokens by compiling minimal context instead of full CLAUDE.md",
   "main": "dist/index.js",
@@ -12,16 +12,16 @@
     "./cli": "./dist/cli.js"
   },
   "bin": {
-    "harness": "./dist/cli.js"
+    "zipline": "./dist/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lcosent/harness.git"
+    "url": "git+https://github.com/lcosent/zipline.git"
   },
   "bugs": {
-    "url": "https://github.com/lcosent/harness/issues"
+    "url": "https://github.com/lcosent/zipline/issues"
   },
-  "homepage": "https://github.com/lcosent/harness#readme",
+  "homepage": "https://github.com/lcosent/zipline#readme",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:m1 && npm run test:m2 && npm run test:m3 && npm run test:m4 && npm run test:m5 && npm run test:m6 && npm run test:m7 && npm run test:m8 && npm run test:m10 && npm run test:m11 && npm run test:m12 && npm run test:m13 && npm run test:m14 && npm run test:m16 && npm run test:m17 && npm run test:m18 && npm run test:m19",

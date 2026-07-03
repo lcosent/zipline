@@ -1,13 +1,13 @@
-// Public API barrel — the STABLE surface harness promises for v1.0.0.
+// Public API barrel — the STABLE surface zipline promises for v1.0.0.
 //
 // Anything re-exported here is covered by semver: it won't be removed or have
 // its type narrowed within the 1.x line without a major bump. Internals not
-// listed here (CLI wiring, test harnesses, per-capability implementations) are
+// listed here (CLI wiring, test scaffolds, per-capability implementations) are
 // free to change. If you import from a deep path instead of this barrel, you
 // are opting out of that stability guarantee.
 //
 // package.json `main` points at the compiled dist/index.js, so
-// `import { ... } from "harness"` resolves here.
+// `import { ... } from "zipline"` resolves here.
 
 // ── Compiler: rule loading + context bundling ────────────────────────────
 export type { Rule, Bundle } from "./compiler";
@@ -63,8 +63,8 @@ export {
 } from "./integrations";
 export type { TerseABResult } from "./integrations";
 
-// ── Paths: harness-root discovery ────────────────────────────────────────
-export { findHarnessRoot, requireHarnessRoot } from "./paths";
+// ── Paths: zipline-root discovery ────────────────────────────────────────
+export { findZiplineRoot, requireZiplineRoot } from "./paths";
 
 /**
  * The public API version. Tracks the package major/minor; bump in lockstep

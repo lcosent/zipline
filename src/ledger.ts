@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as fs from "fs";
 import * as path from "path";
-import { requireHarnessRoot, ledgerPath as getLedgerPath } from "./paths";
+import { requireZiplineRoot, ledgerPath as getLedgerPath } from "./paths";
 
 /**
  * Public ledger schema version. Bump ONLY on a breaking change to
@@ -55,7 +55,7 @@ export type LedgerEntry = z.infer<typeof LedgerEntry>;
 export type LedgerEntryInput = z.input<typeof LedgerEntry>;
 
 export function appendLedger(entry: LedgerEntryInput, repoRoot?: string): void {
-  const root = repoRoot ?? requireHarnessRoot();
+  const root = repoRoot ?? requireZiplineRoot();
   const ledgerFile = getLedgerPath(root);
   fs.mkdirSync(path.dirname(ledgerFile), { recursive: true });
   // Stamp the current schema version unless the caller set one explicitly, so
@@ -65,7 +65,7 @@ export function appendLedger(entry: LedgerEntryInput, repoRoot?: string): void {
 }
 
 export function readLedger(repoRoot?: string): LedgerEntry[] {
-  const root = repoRoot ?? requireHarnessRoot();
+  const root = repoRoot ?? requireZiplineRoot();
   const ledgerFile = getLedgerPath(root);
   if (!fs.existsSync(ledgerFile)) return [];
   const entries: LedgerEntry[] = [];

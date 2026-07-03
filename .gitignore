@@ -31,8 +31,8 @@ coverage/
 # OS
 Thumbs.db
 
-# Harness state (ledger contains run data)
-.harness/ledger.jsonl
+# Zipline state (ledger contains run data)
+.zipline/ledger.jsonl
 
 # Local test data
 /tmp/

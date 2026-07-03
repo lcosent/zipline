@@ -1,6 +1,6 @@
 # GitHub Setup Instructions
 
-This guide walks you through publishing harness to GitHub with best practices.
+This guide walks you through publishing zipline to GitHub with best practices.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ This guide walks you through publishing harness to GitHub with best practices.
 
 ### Repository Settings
 
-**Repository name:** `harness`
+**Repository name:** `zipline`
 
 **Description:** 
 ```
@@ -42,10 +42,10 @@ orchestration, anthropic, typescript, productivity, cost-savings
 After creating the repository on GitHub:
 
 ```bash
-cd /Users/luca/Documents/coding/Infra/harness
+cd /Users/luca/Documents/coding/Infra/zipline
 
 # Add GitHub remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/harness.git
+git remote add origin https://github.com/YOUR_USERNAME/zipline.git
 
 # Verify remote
 git remote -v
@@ -115,13 +115,13 @@ On GitHub, go to your repository settings:
 
 After first CI run passes, your README badges will work:
 
-- [![npm version](https://img.shields.io/npm/v/harness.svg?style=flat-square)](https://www.npmjs.com/package/harness)
-- [![Tests](https://github.com/YOUR_USERNAME/harness/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/harness/actions)
+- [![npm version](https://img.shields.io/npm/v/zipline.svg?style=flat-square)](https://www.npmjs.com/package/zipline)
+- [![Tests](https://github.com/YOUR_USERNAME/zipline/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/zipline/actions)
 - [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Update README.md CI badge URL:
 ```markdown
-[![Tests](https://github.com/YOUR_USERNAME/harness/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/harness/actions)
+[![Tests](https://github.com/YOUR_USERNAME/zipline/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/zipline/actions)
 ```
 
 ## Step 6: Create First Release
@@ -144,7 +144,7 @@ On GitHub:
 
 ## Step 7: (Optional) Publish to npm
 
-If you want others to install via `npm install -g harness`:
+If you want others to install via `npm install -g zipline`:
 
 ```bash
 # Login to npm (one time)
@@ -157,12 +157,12 @@ npm publish
 npm publish --access public
 ```
 
-**Note:** Check if `harness` name is available on npm first:
+**Note:** Check if `zipline` name is available on npm first:
 ```bash
-npm view harness
+npm view zipline
 ```
 
-If taken, consider: `@your-username/harness` or `claude-harness` or `harness-ai`
+If taken, consider: `@your-username/zipline` or `claude-zipline` or `zipline-ai`
 
 ## Step 8: Add to README
 
@@ -173,18 +173,18 @@ Add installation instructions in README:
 
 ### From npm
 \`\`\`bash
-npm install -g harness
+npm install -g zipline
 \`\`\`
 
 ### From GitHub
 \`\`\`bash
-npm install -g github:YOUR_USERNAME/harness
+npm install -g github:YOUR_USERNAME/zipline
 \`\`\`
 
 ### From source
 \`\`\`bash
-git clone https://github.com/YOUR_USERNAME/harness.git
-cd harness
+git clone https://github.com/YOUR_USERNAME/zipline.git
+cd zipline
 npm install
 npm run build
 npm link
@@ -194,7 +194,7 @@ npm link
 ## Step 9: Social/Promotion (Optional)
 
 Share your project:
-- Twitter/X: "Built harness: save 60-70% of @AnthropicAI Claude Code tokens"
+- Twitter/X: "Built zipline: save 60-70% of @AnthropicAI Claude Code tokens"
 - Reddit: r/ClaudeAI, r/programming
 - Hacker News: Show HN
 - Dev.to: Write a blog post
@@ -211,7 +211,7 @@ After setup, verify:
 - [ ] Topics/tags are added
 - [ ] Description is set
 - [ ] Release v0.1.0 exists
-- [ ] Clone works: `git clone https://github.com/YOUR_USERNAME/harness.git`
+- [ ] Clone works: `git clone https://github.com/YOUR_USERNAME/zipline.git`
 - [ ] URLs in package.json work
 - [ ] Security contact is correct
 
@@ -223,13 +223,13 @@ After setup, verify:
 - Check Actions tab for errors
 
 ### Tests failing on CI
-- Ensure `.harness/` fixtures are committed
+- Ensure `.zipline/` fixtures are committed
 - Check Node version compatibility (18+)
 - Verify all dependencies in package.json
 
 ### npm publish fails
-- Name might be taken (check `npm view harness`)
-- Use scoped package: `@username/harness`
+- Name might be taken (check `npm view zipline`)
+- Use scoped package: `@username/zipline`
 - Ensure you're logged in: `npm whoami`
 
 ## Next Steps

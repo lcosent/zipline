@@ -4,7 +4,7 @@ import { Tier } from "./policy";
 
 // Real model calls run through the `claude` CLI in headless mode — on the
 // user's Claude Code subscription, NOT a paid API key. When claude is absent or
-// HARNESS_SIMULATE=1 is set, a deterministic offline stub is used so tests and
+// ZIPLINE_SIMULATE=1 is set, a deterministic offline stub is used so tests and
 // CI stay green with no subscription and no network.
 
 export interface ModelResponse {
@@ -13,7 +13,7 @@ export interface ModelResponse {
   source: "claude-cli" | "simulate";
 }
 
-// Map harness tiers to claude CLI --model aliases.
+// Map zipline tiers to claude CLI --model aliases.
 const TIER_MODEL: Record<Tier, string> = {
   haiku: "haiku",
   sonnet: "sonnet",
@@ -22,7 +22,7 @@ const TIER_MODEL: Record<Tier, string> = {
 
 /** Is the real (subscription) path available and not force-disabled? */
 export function liveAvailable(): boolean {
-  if (process.env.HARNESS_SIMULATE === "1") return false;
+  if (process.env.ZIPLINE_SIMULATE === "1") return false;
   try {
     execFileSync("claude", ["--version"], { stdio: "ignore", timeout: 5000 });
     return true;
