@@ -7,8 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned
-- Continuous-learning pipeline: ledger → rule/skill proposals (M14)
+_Backlog drained (M0–M14 shipped). New milestones will be added as they're scoped._
+
+## [0.7.0] - 2026-07-03
+
+### Added
+- **M14: continuous-learning pipeline** — `harness learn` mines the ledger and
+  proposes rule changes from evidence, deterministically: DE-PRIORITIZE a rule
+  that's excluded in ≥80% of runs with zero failure cost, and PIN a rule whose
+  absence correlates with failures (fail-rate ≥30pts higher when excluded vs
+  included). Proposals are human-reviewable and **never written silently** —
+  `harness learn` prints them; nothing touches `.harness/rules/` without explicit
+  approval (`--apply` stages for review; automatic rewriting is deferred by
+  design). Closes the DESIGN §4.5 cross-session learning loop.
 
 ## [0.6.0] - 2026-07-03
 

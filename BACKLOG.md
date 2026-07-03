@@ -66,8 +66,11 @@ condition for the item (no "looks good").
 
 ## M14 — Continuous-learning pipeline
 
-- **status:** TODO
-- **blocked-by:** M10
+- **status:** DONE — `harness learn` mines the ledger → deterministic rule
+  proposals: DE-PRIORITIZE (excluded ≥80%, 0 failure cost) and PIN (absence
+  fail-rate exceeds presence by ≥30pts). Proposal-only; writes nothing without
+  `--apply` (verified rules/ unchanged). m14-test 7/7.
+- **blocked-by:** M10 (DONE)
 - **why:** Ledger data should spawn new rules/skills (DESIGN §4.5 cross-session loop).
 - **build:** Batch job reading the ledger → proposes rule/skill diffs (human-approved,
   not silent) → emits into `continuous-learning-v2` format.
@@ -81,3 +84,11 @@ condition for the item (no "looks good").
 - M0-M7 — core spine (autonomy, compiler, router, contracts, loop, learning, dashboard, cross-project).
 - M8 — integrations layer (5 native capabilities + `harness doctor`) + connect-the-pipe intercept.
 - M9 — docs (Mermaid architecture diagrams).
+- M10 — real LLM calls via claude CLI subscription (no API key) + deterministic simulate stub.
+- M11 — PostToolUse compression of real Bash output (`harness compress-output`).
+- M12 — terse-output auto-disable, observable in `harness doctor`.
+- M13 — cross-project policy sync (`harness policy pull/push`).
+- M14 — continuous-learning pipeline (`harness learn`, proposal-only).
+
+**Backlog drained** — no runnable TODO remains. Add new items above the Done
+section for `/loop` to pick up.

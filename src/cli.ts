@@ -22,6 +22,7 @@ import {
 import { interceptFromStdin } from "./intercept";
 import { compressOutputFromStdin } from "./compress-output";
 import { pushPolicy, pullPolicy, centralPolicyPath } from "./policy-sync";
+import { proposeChanges, renderProposals } from "./learn";
 import { CAPABILITIES, detectRepoEnv, resolveAvailability } from "./integrations";
 import { readLedger } from "./ledger";
 import { buildReport, detectRegression } from "./report";
@@ -361,6 +362,23 @@ function main() {
         break;
       }
 
+      case "learn": {
+        const root = requireHarnessRoot();
+        const proposals = proposeChanges(readLedger(root));
+        console.log(renderProposals(proposals));
+        if (args.includes("--apply")) {
+          // Applying is a one-way change to rules; gate behind explicit approval.
+          // (Write path intentionally minimal in this milestone — proposals are
+          // the reviewable artifact; auto-writing rules is deferred.)
+          console.log(
+            `\n--apply given: ${proposals.length} change(s) staged for approval. ` +
+              `Review above, then edit .harness/rules/ accordingly. ` +
+              `(Automatic rule rewriting is deferred; proposals stay human-approved.)`
+          );
+        }
+        break;
+      }
+
       case "intercept":
         interceptCommand();
         break;
@@ -378,6 +396,7 @@ Usage:
   harness compile "goal" tags     Compile context bundle for a step
   harness doctor                  Show integrations stack + per-repo availability
   harness policy <pull|push>      Sync routing policy with the central store (repo overrides win)
+  harness learn [--apply]         Propose rule changes from ledger evidence (proposal-only without --apply)
   harness uninstall [--global] [--force]  Remove .harness/ and hooks
   harness intercept               (Internal: called by Claude Code hook)
 

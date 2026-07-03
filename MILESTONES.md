@@ -208,6 +208,7 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 | M11 | PostToolUse compress | ✅ EXPANSION | `harness compress-output` replaces Bash stdout via updatedToolOutput; ~63% reduction |
 | M12 | terse auto-disable | ✅ EXPANSION | `resolveAvailability` shows disabled in doctor when terse net-delta goes negative |
 | M13 | Cross-project policy sync | ✅ EXPANSION | `harness policy pull/push`; repo overrides win; provenance logged |
+| M14 | Continuous-learning | ✅ EXPANSION | `harness learn` proposes rule pins/de-prioritize from ledger; proposal-only |
 
 ---
 
