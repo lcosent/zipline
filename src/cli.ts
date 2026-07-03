@@ -17,6 +17,7 @@ import {
   HOOK_COMMAND,
   README,
 } from "./init-templates";
+import { interceptFromStdin } from "./intercept";
 import { readLedger } from "./ledger";
 import { buildReport, detectRegression } from "./report";
 import { compile, fullContextBundle, tokenCount } from "./compiler";
@@ -237,10 +238,24 @@ function uninstallCommand(opts: { global?: boolean; force?: boolean } = {}) {
   console.log(`\nHarness uninstalled from ${opts.global ? "global" : targetDir}`);
 }
 
+function readStdin(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    // No piped input (e.g. run manually in a TTY): don't hang waiting on stdin.
+    if (process.stdin.isTTY) {
+      resolve("");
+      return;
+    }
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", (chunk) => (data += chunk));
+    process.stdin.on("end", () => resolve(data));
+    process.stdin.on("error", reject);
+  });
+}
+
 function interceptCommand() {
-  console.log("Harness intercept hook (not yet implemented)");
-  console.log(`This will be called by Claude Code on ${HOOK_EVENT}`);
-  process.exit(0);
+  // interceptFromStdin owns its own process.exit (never throws to the prompt).
+  void interceptFromStdin(readStdin);
 }
 
 function main() {
