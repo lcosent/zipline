@@ -263,7 +263,7 @@ flowchart LR
 - **[Quick Start](#quick-start)** — Get up and running in 5 minutes
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Diagrams: spine, data-flow, capability selection
 - **[DESIGN.md](DESIGN.md)** — Architecture, risks, design decisions
-- **[MILESTONES.md](MILESTONES.md)** — Detailed success criteria (M0-M8)
+- **[MILESTONES.md](MILESTONES.md)** — Detailed success criteria (M0-M15)
 - **[IMPLEMENTATION.md](IMPLEMENTATION.md)** — What was built, metrics, roadmap
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — Development guide
 - **[CHANGELOG.md](CHANGELOG.md)** — Version history
@@ -279,6 +279,8 @@ flowchart LR
 | `harness report [--global]` | Show token savings and system metrics |
 | `harness compile "goal" tags` | Manually compile context bundle for a step |
 | `harness doctor` | Show integrations stack + per-repo availability |
+| `harness policy <pull\|push>` | Sync routing policy with the central store (repo overrides win) |
+| `harness learn [--apply]` | Propose rule changes from ledger evidence (proposal-only without `--apply`) |
 | `harness uninstall [--global] [--force]` | Remove `.harness/` and hooks (warns if data exists) |
 
 ---
@@ -434,10 +436,10 @@ Every operation appends to `.harness/ledger.jsonl`:
 
 ## Testing
 
-All milestone tests passing (M0-M7):
+All milestone tests passing (M0-M15):
 
 ```bash
-npm test              # Run all milestone tests
+npm test              # Run all milestone tests (offline, deterministic)
 npm run test:m1       # M1: Compiler (64.4% savings)
 npm run test:m2       # M2: Router (19.8% of Opus cost)
 npm run test:m3       # M3: Contracts (100% valid rate)
@@ -445,32 +447,42 @@ npm run test:m4       # M4: Full loop (all phases execute)
 npm run test:m5       # M5: Learning (75% tuned cost)
 npm run test:m6       # M6: Dashboard (reconciliation)
 npm run test:m7       # M7: Cross-project policy
+npm run test:m8       # M8: Integrations (20 gates)
+npm run test:m10      # M10: Real LLM calls (simulate)
+npm run test:m11      # M11: PostToolUse compress (62.7% reduction)
+npm run test:m12      # M12: terse auto-disable
+npm run test:m13      # M13: Policy sync
+npm run test:m14      # M14: Learning pipeline
+
+# Exercise the REAL claude subscription (opt-in; offline stays green without it)
+HARNESS_LIVE=1 npm run test:m10
 ```
 
 ---
 
 ## Roadmap
 
-### v0.2.0 (Current) ✅
-- All milestones (M0-M8) implemented and passing
-- **Hook integration:** `harness intercept` compiles + injects real context on
-  every `UserPromptSubmit` (fixed the v0.1.0 hook-format bug)
-- **M8 integrations:** 5 native capabilities + accelerators + `harness doctor`
-- CLI: `init`, `report`, `compile`, `doctor`, `uninstall`
-- Docs: Mermaid architecture diagrams ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md))
+### v0.7.x (Current) ✅
+All milestones M0–M15 implemented and passing. What shipped since v0.2.0:
+- **Real LLM calls (M10):** the loop runs through the `claude` CLI on your
+  subscription (no API key); deterministic offline stub under `HARNESS_SIMULATE=1`.
+- **PostToolUse compression (M11):** `harness compress-output` shrinks real Bash
+  output before it reaches the model (`updatedToolOutput`).
+- **terse-output auto-disable (M12):** net-negative capabilities show `disabled`
+  in `harness doctor`.
+- **Cross-project policy sync (M13):** `harness policy pull/push`; repo overrides win.
+- **Continuous learning (M14):** `harness learn` proposes rule pins/de-prioritize
+  from ledger evidence (proposal-only).
+- **Live-path validation (M15):** `HARNESS_LIVE=1` exercises a real subscription
+  call in the test suite; offline stays green.
+- CLI: `init`, `report`, `compile`, `doctor`, `policy`, `learn`, `uninstall`.
 
-### v0.3.0 (Next)
-- **Real LLM calls:** Replace the simulated loop (`Math.random()`) with Anthropic API
-- **PostToolUse hook:** Compress real user Bash output (M8 compress is internal-loop-only today)
-- **terse-output live auto-disable:** Needs real model output to measure net delta
-- **Policy sync:** `harness policy pull/push` for cross-repo sharing
-- **Continuous learning:** Ledger → new rules/skills via `continuous-learning-v2`
-
-### v1.0.0
+### Toward v1.0.0
 - Stable API for rules, policy, ledger schema
+- terse-output live A/B output-delta measurement (mechanism shipped; real
+  measurement needs a no-terse baseline)
 - Optional gstack integration (orchestration leaves)
 - Production-ready hook performance
-- Comprehensive documentation and examples
 
 ---
 
