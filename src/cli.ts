@@ -18,6 +18,7 @@ import {
   README,
 } from "./init-templates";
 import { interceptFromStdin } from "./intercept";
+import { CAPABILITIES, detectRepoEnv } from "./integrations";
 import { readLedger } from "./ledger";
 import { buildReport, detectRegression } from "./report";
 import { compile, fullContextBundle, tokenCount } from "./compiler";
@@ -258,6 +259,43 @@ function interceptCommand() {
   void interceptFromStdin(readStdin);
 }
 
+function doctorCommand() {
+  const root = requireHarnessRoot();
+  const env = detectRepoEnv(root);
+
+  console.log("Harness Integrations");
+  console.log("─".repeat(52));
+  for (const cap of CAPABILITIES) {
+    const a = cap.availability(env);
+    const mark =
+      a.status === "accelerated" ? "✓" : a.status === "native" ? "✓" : a.status === "inactive" ? "○" : "✗";
+    let line = `${mark} ${cap.name.padEnd(16)} ${a.detail}`;
+    if (a.advisory) line += `  · ${a.advisory}`;
+    console.log(line);
+  }
+
+  // Capability net-delta over recent ledger entries. This is the CAPABILITY
+  // delta only (input tokens before vs after each capability transform) — it is
+  // NOT the M1 compiler savings (baseline_tokens vs tokens_in), which `harness
+  // report` shows. Kept separate so the two are never double-counted.
+  const caps = readLedger(root)
+    .flatMap((e) => e.capabilities ?? [])
+    .filter((c) => !c.net_delta_exempt && c.tokens_before > 0);
+  const recent = caps.slice(-20);
+  if (recent.length > 0) {
+    const before = recent.reduce((s, c) => s + c.tokens_before, 0);
+    const after = recent.reduce((s, c) => s + c.tokens_after, 0);
+    const pct = before > 0 ? (((before - after) / before) * 100).toFixed(1) : "0";
+    console.log("");
+    console.log(
+      `Capability net delta (last ${recent.length} runs): ${pct}%  [capability transforms only; separate from compiler savings in 'harness report']`
+    );
+  } else {
+    console.log("");
+    console.log("Capability net delta: no capability runs logged yet.");
+  }
+}
+
 function main() {
   const [, , command, ...args] = process.argv;
 
@@ -289,6 +327,10 @@ function main() {
         });
         break;
 
+      case "doctor":
+        doctorCommand();
+        break;
+
       case "intercept":
         interceptCommand();
         break;
@@ -300,6 +342,7 @@ Usage:
   harness init [--global]         Initialize .harness/ in current dir (or ~/.harness/)
   harness report [--global]       Show token savings and system metrics
   harness compile "goal" tags     Compile context bundle for a step
+  harness doctor                  Show integrations stack + per-repo availability
   harness uninstall [--global] [--force]  Remove .harness/ and hooks
   harness intercept               (Internal: called by Claude Code hook)
 

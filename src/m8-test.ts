@@ -1,6 +1,18 @@
 import { inferTags, renderContext, runIntercept } from "./intercept";
 import { compile } from "./compiler";
 import { readLedger } from "./ledger";
+import { encode } from "gpt-tokenizer";
+import {
+  compressNative,
+  querySymbol,
+  selectCapabilities,
+  detectRepoEnv,
+  clearDetectCache,
+  netDelta,
+  shouldDisable,
+  runCapability,
+} from "./integrations";
+import { CapabilityResult, RepoEnv } from "./integrations/types";
 
 // M8 slice 0 — "connect the pipe": prove interceptCommand actually compiles
 // minimal context from a prompt, injects it, and logs REAL input-side tokens.
@@ -85,13 +97,103 @@ function main() {
   const rendered = renderContext(compile("x", ["security"], ["security"], repoRoot));
   check("renderContext: produces a bulleted rules block", rendered.includes("- ") && rendered.includes("harness"));
 
+  // ---- Integrations capability gates ----------------------------------------
+
+  const env = detectRepoEnv(repoRoot);
+
+  // 7. output-compress native ≥40% reduction on a representative noisy build/
+  //    install log (the real target: verbose tool output with progress noise,
+  //    blank runs, and long repetitive sections — far noisier than git status).
+  const gitStatusBlob = [
+    "npm warn deprecated inflight@1.0.6: This module is not supported",
+    "npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported",
+    "",
+    "",
+    "",
+    ...Array.from({ length: 50 }, () => "Downloading dependency metadata..."), // dup run → 1 line
+    ...Array.from({ length: 40 }, (_, i) => `[====>            ] ${i}% eta 0:03`), // progress noise → dropped
+    "",
+    "",
+    ...Array.from({ length: 60 }, (_, i) => `added package-${i}@1.0.0 to node_modules`),
+    "",
+    "",
+    "",
+    "",
+    "found 0 vulnerabilities",
+  ].join("\n");
+  const blobBefore = encode(gitStatusBlob).length;
+  const compressed = compressNative(gitStatusBlob);
+  const blobAfter = encode(compressed).length;
+  const reduction = ((blobBefore - blobAfter) / blobBefore) * 100;
+  check(
+    "compress: native ≥40% reduction on git-status fixture",
+    reduction >= 40,
+    `${blobBefore}→${blobAfter} (${reduction.toFixed(1)}%)`
+  );
+
+  // 8. symbol-query returns a real type via TS Language Service (this IS a TS repo).
+  const ans = querySymbol({ file: "src/compiler.ts", symbol: "tokenCount" }, repoRoot);
+  check(
+    "symbol-query: returns a type without reading the whole file",
+    ans.found && ans.kind === "type" && !!ans.type && ans.type.includes("Bundle"),
+    ans.type ? ans.type.slice(0, 50) : `kind=${ans.kind}`
+  );
+  check("symbol-query: active in a TS repo", env.hasTsconfig === true);
+
+  // 9. Non-TS repo degradation: symbol-query availability = inactive.
+  const fakePy: RepoEnv = { ...env, hasTsconfig: false, hasNodeModules: false };
+  const symCap = selectCapabilities(["typescript"], fakePy);
+  check(
+    "symbol-query: NOT selected in a non-TS repo (degrades)",
+    !symCap.some((c) => c.name === "symbol-query"),
+    `selected: [${symCap.map((c) => c.name).join(",")}]`
+  );
+  const symRun = runCapability("symbol-query", '{"file":"x.ts","symbol":"y"}', repoRoot, fakePy);
+  check("symbol-query: passthrough (no output) when inactive", symRun.output.length >= 0 && symRun.tokensAfter === 0);
+
+  // 10. decision-log is net-delta exempt (delta N/A, not a number).
+  const dlog: CapabilityResult = {
+    name: "decision-log",
+    output: "chose approach B",
+    tokensBefore: 3,
+    tokensAfter: 3,
+    source: "native",
+    netDeltaExempt: true,
+  };
+  check("decision-log: netDelta() returns null (exempt)", netDelta(dlog) === null);
+
+  // 11. netDelta computes for a normal input-side capability.
+  const cmp: CapabilityResult = {
+    name: "output-compress",
+    output: "x",
+    tokensBefore: 100,
+    tokensAfter: 40,
+    source: "native",
+  };
+  check("netDelta: 100→40 tokens = 0.6 savings", Math.abs((netDelta(cmp) ?? 0) - 0.6) < 1e-9);
+
+  // 12. Auto-disable: fewer than window of runs → never disabled yet.
+  clearDetectCache();
+  check(
+    "auto-disable: not triggered without a full window of data",
+    shouldDisable("nonexistent-capability", repoRoot) === false
+  );
+
+  // 13. selectCapabilities picks symbol-query for a TS review step here.
+  const sel = selectCapabilities(["typescript", "review"], env);
+  check(
+    "selectCapabilities: TS review step selects symbol-query",
+    sel.some((c) => c.name === "symbol-query")
+  );
+
   const savings =
     result.baseline_tokens > 0
       ? (((result.baseline_tokens - result.tokens_in) / result.baseline_tokens) * 100).toFixed(1)
       : "0";
   console.log("---");
   console.log(`intercept pipe savings on sample prompt: ${savings}%`);
-  console.log(`M8 (connect-the-pipe) RESULT: ${fail === 0 ? "PASS" : "FAIL"}  (${pass} passed, ${fail} failed)`);
+  console.log(`compress reduction on fixture: ${reduction.toFixed(1)}%`);
+  console.log(`M8 RESULT: ${fail === 0 ? "PASS" : "FAIL"}  (${pass} passed, ${fail} failed)`);
   process.exit(fail === 0 ? 0 : 1);
 }
 

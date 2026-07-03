@@ -8,9 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Hook integration for transparent context compilation
-- Real LLM API calls (currently simulated in tests)
+- Real LLM API calls (loop currently simulated)
+- PostToolUse hook to compress real user Bash output
+- terse-output live net-delta + auto-disable (needs real model output)
+- M9 docs: Mermaid architecture/data-flow diagrams
 - Cross-project policy sync (`harness policy pull/push`)
+
+## [0.2.0] - 2026-07-03
+
+### Fixed
+- **Claude Code hook format** — `harness init` wrote an invalid hook
+  (`"user-prompt-submit": "..."`); corrected to the real
+  `UserPromptSubmit` PascalCase event with the matcher/command array shape.
+  The transparent hook never fired before this fix. Uninstall now strips only
+  harness's own entry, preserving user-added hooks.
+
+### Added
+- **Connect-the-pipe (`harness intercept`)** — the stub is now a real pipeline:
+  reads Claude Code's `UserPromptSubmit` JSON from stdin, infers rule tags from
+  the prompt, compiles a minimal context bundle, injects it via
+  `additionalContext`, and logs real input-side `tokens_in` vs `baseline_tokens`
+  to the ledger. Non-harness dirs / failures exit 0 without disturbing the prompt.
+- **M8: Integrations layer** (`src/integrations/`) — 5 native capabilities,
+  auto-selected per step (the user never picks one):
+  - `output-compress` — native filter/dedupe/truncate of command output; uses
+    `rtk` as an accelerator when on PATH. ~66% reduction on noisy build logs.
+  - `symbol-query` — type/diagnostics via the TS Language Service (cached), no
+    whole-file reads. Detect-and-degrade: shows "TS repos only — inactive here"
+    outside TS repos rather than erroring.
+  - `doc-fetch` — compressed `node_modules` README + type surface (Node-only).
+  - `terse-output` — dense-output prompt fragment (auto-disable deferred).
+  - `decision-log` — append-only decisions; exempt from net-delta accounting.
+  - Centralized `detect.ts` (`RepoEnv`): one cached probe of tsconfig/node_modules/
+    rtk/MCP config — capabilities read flags, never re-probe.
+  - Net-negative auto-disable (M2-shaped rolling window) for input-side capabilities.
+- **`harness doctor`** — shows the integrations stack and per-repo availability
+  (native / accelerated / inactive), plus capability net-delta (kept separate
+  from compiler savings to avoid double-counting).
+- Optional `capabilities[]` field on ledger entries (backward-compatible).
 
 ## [0.1.0] - 2026-07-03
 

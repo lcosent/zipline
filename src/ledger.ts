@@ -19,6 +19,19 @@ export const LedgerEntry = z.object({
   rules_included: z.array(z.string()).default([]),
   rules_excluded: z.array(z.string()).default([]),
   note: z.string().default(""),
+  // Optional per-capability accounting (M8 integrations). Absent on older
+  // entries — optional keeps existing ledgers parseable (backward-compat).
+  capabilities: z
+    .array(
+      z.object({
+        name: z.string(),
+        tokens_before: z.number().int(),
+        tokens_after: z.number().int(),
+        source: z.enum(["native", "adapter"]),
+        net_delta_exempt: z.boolean().default(false),
+      })
+    )
+    .optional(),
 });
 
 export type LedgerEntry = z.infer<typeof LedgerEntry>;
