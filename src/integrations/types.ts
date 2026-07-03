@@ -17,6 +17,7 @@ export interface RepoEnv {
   rtkOnPath: boolean; // output-compress accelerator
   context7Configured: boolean; // doc-fetch: informational (user wires into Claude)
   lspMcpConfigured: boolean; // symbol-query: informational (user wires into Claude)
+  gstackInstalled: boolean; // optional orchestration layer — detected, never invoked
 }
 
 /** How a capability runs in this repo, for `harness doctor`. */

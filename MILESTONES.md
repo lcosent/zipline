@@ -209,6 +209,10 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 | M12 | terse auto-disable | ✅ EXPANSION | `resolveAvailability` shows disabled in doctor when terse net-delta goes negative |
 | M13 | Cross-project policy sync | ✅ EXPANSION | `harness policy pull/push`; repo overrides win; provenance logged |
 | M14 | Continuous-learning | ✅ EXPANSION | `harness learn` proposes rule pins/de-prioritize from ledger; proposal-only |
+| M16 | Stable public API | ✅ v1 GATE | Versioned barrel + `LEDGER_SCHEMA_VERSION`; pre-v1 ledgers still parse |
+| M17 | terse A/B output-delta | ✅ v1 GATE | Real no-terse baseline measures OUTPUT delta; feeds auto-disable |
+| M18 | Optional gstack | ✅ v1 GATE | Detected, never invoked; honest degradation in `harness doctor` |
+| M19 | Hook performance | ✅ v1 GATE | Hard 150ms budget; intercept ~0.5ms, compress ~3ms/4000-line log |
 
 ---
 

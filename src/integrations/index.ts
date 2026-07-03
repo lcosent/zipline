@@ -10,6 +10,8 @@ export { compressNative, compressCapability } from "./compress";
 export { querySymbol, symbolCapability, clearSymbolCache } from "./symbols";
 export { fetchPackageDoc, docsCapability } from "./docs";
 export { terseCapability, TERSE_FRAGMENT } from "./terse";
+export { measureTerseOutputDelta, terseABToLogEntry } from "./terse-ab";
+export type { TerseABResult, ModelCall } from "./terse-ab";
 export { decisionLogCapability } from "./decision-log";
 
 // Net-negative auto-disable threshold. Reuses the SHAPE of M2 auto-demote

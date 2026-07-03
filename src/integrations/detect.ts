@@ -28,6 +28,29 @@ function mcpConfigured(repoRoot: string, serverNeedle: string): boolean {
   return false;
 }
 
+/**
+ * Is gstack (the orchestration skill suite) installed for this user? gstack is
+ * an ORCHESTRATION LAYER, not a token-compression capability — harness never
+ * invokes it, only detects it so `harness doctor` can surface "orchestration
+ * leaves available". Honest degradation: absent → doctor says so, nothing
+ * breaks. Probed at the conventional install path (`~/.claude/skills/gstack`),
+ * overridable via $GSTACK_HOME for non-standard installs.
+ */
+function gstackInstalled(): boolean {
+  const candidates = [
+    process.env.GSTACK_HOME,
+    path.join(process.env.HOME || "", ".claude", "skills", "gstack"),
+  ].filter((p): p is string => !!p);
+  for (const dir of candidates) {
+    try {
+      if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) return true;
+    } catch {
+      // unreadable path → treat as not installed
+    }
+  }
+  return false;
+}
+
 /** Is a binary resolvable on PATH? Walks $PATH entries — no shell, no interp. */
 function onPath(bin: string): boolean {
   const dirs = (process.env.PATH || "").split(path.delimiter);
@@ -56,6 +79,7 @@ export function detectRepoEnv(repoRoot: string): RepoEnv {
     context7Configured: mcpConfigured(repoRoot, "context7"),
     lspMcpConfigured:
       mcpConfigured(repoRoot, "lsp-mcp") || mcpConfigured(repoRoot, "lsp"),
+    gstackInstalled: gstackInstalled(),
   };
 
   cache.set(repoRoot, env);

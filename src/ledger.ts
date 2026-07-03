@@ -3,7 +3,20 @@ import * as fs from "fs";
 import * as path from "path";
 import { requireHarnessRoot, ledgerPath as getLedgerPath } from "./paths";
 
+/**
+ * Public ledger schema version. Bump ONLY on a breaking change to
+ * LedgerEntry's shape (a removed/renamed field or a narrowed type). Additive
+ * optional fields do NOT bump it — they stay backward-compatible by
+ * construction. Entries written before this field existed parse as version 1
+ * (see `.default(LEDGER_SCHEMA_VERSION)` below), so old ledgers remain
+ * readable. This is the frozen contract the v1 API promises.
+ */
+export const LEDGER_SCHEMA_VERSION = 1;
+
 export const LedgerEntry = z.object({
+  // Schema version stamped at write time. Optional + defaulted so pre-v1
+  // ledgers (which lack it) still parse — they're treated as version 1.
+  schema: z.number().int().default(LEDGER_SCHEMA_VERSION),
   ts: z.string(),
   milestone: z.string(),
   step: z.string(),
@@ -36,11 +49,19 @@ export const LedgerEntry = z.object({
 
 export type LedgerEntry = z.infer<typeof LedgerEntry>;
 
-export function appendLedger(entry: LedgerEntry, repoRoot?: string): void {
+// Construction-time shape: fields with a Zod default (schema, tier, tokens_*,
+// etc.) are optional for callers — the default fills them in on write/parse.
+// Readers get the fully-resolved `LedgerEntry` (output) type back.
+export type LedgerEntryInput = z.input<typeof LedgerEntry>;
+
+export function appendLedger(entry: LedgerEntryInput, repoRoot?: string): void {
   const root = repoRoot ?? requireHarnessRoot();
   const ledgerFile = getLedgerPath(root);
   fs.mkdirSync(path.dirname(ledgerFile), { recursive: true });
-  fs.appendFileSync(ledgerFile, JSON.stringify(entry) + "\n");
+  // Stamp the current schema version unless the caller set one explicitly, so
+  // every written line is self-describing for future migrations.
+  const stamped = { schema: LEDGER_SCHEMA_VERSION, ...entry };
+  fs.appendFileSync(ledgerFile, JSON.stringify(stamped) + "\n");
 }
 
 export function readLedger(repoRoot?: string): LedgerEntry[] {

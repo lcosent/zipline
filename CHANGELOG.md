@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_Backlog drained (M0–M15 shipped). New milestones will be added as they're scoped._
+_Backlog drained (M0–M19 shipped, v1.0.0 cut). New milestones will be added as they're scoped._
+
+## [1.0.0] - 2026-07-03
+
+First stable release. The four v1 gates from the roadmap all landed, each with a
+binary, offline test (`npm test` runs M1–M19 green).
+
+### Added
+- **M16: stable public API surface.** New barrel `src/index.ts` (compiled to
+  `dist/index.js`, now the package `main`) re-exports the frozen v1 surface —
+  compiler, policy, policy-sync, ledger, contracts, report, learn, integrations,
+  paths — plus `API_VERSION`. The ledger schema gains `LEDGER_SCHEMA_VERSION` and
+  stamps `schema` on every written line; pre-v1 ledgers (no `schema`) parse as v1
+  (backward-compatible). `package.json` gains `exports` (`.` → library, `./cli`)
+  and `types`. `test:m16` 7/7.
+- **M17: terse-output A/B output-delta measurement.** `src/integrations/terse-ab.ts`
+  runs a paired no-terse-vs-terse model call and returns the signed OUTPUT-token
+  delta — the honest measurement terse needed (its input-side fragment always
+  reads negative). `HARNESS_TERSE_AB=1` wires it into the loop's build step; the
+  logged delta feeds the existing `shouldDisable` window, so a net-negative terse
+  now trips on real output data. `test:m17` 7/7.
+- **M18: optional gstack integration.** `RepoEnv.gstackInstalled` detects the
+  gstack orchestration suite (`$GSTACK_HOME` or `~/.claude/skills/gstack`);
+  `harness doctor` surfaces an "Orchestration (optional)" section. Detected, never
+  invoked; absence degrades honestly and never throws. `test:m18` 5/5.
+- **M19: production-ready hook performance.** A hard latency budget (150ms) pins
+  both hot-path hooks — `intercept` (~0.5ms) and `compress-output` (~3ms on a
+  4000-line log, 100× token reduction). Guards against accidental O(n²) or
+  heavyweight-import regressions on Claude Code's critical path. `test:m19` 4/4.
+
+### Changed
+- `package.json` `main` now points at the library barrel (`dist/index.js`); the
+  CLI is exposed via `bin` and `exports["./cli"]`.
+- `appendLedger` accepts `LedgerEntryInput` (schema/defaulted fields optional at
+  construction); readers still get the fully-resolved `LedgerEntry`.
 
 ## [0.7.1] - 2026-07-03
 

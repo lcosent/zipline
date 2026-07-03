@@ -462,8 +462,22 @@ HARNESS_LIVE=1 npm run test:m10
 
 ## Roadmap
 
-### v0.7.x (Current) ✅
-All milestones M0–M15 implemented and passing. What shipped since v0.2.0:
+### v1.0.0 (Current) ✅
+All milestones M0–M19 implemented and passing. The four v1 gates that closed
+the release:
+- **Stable public API (M16):** a versioned barrel (`import { … } from "harness"`)
+  re-exports the frozen surface — rules, policy, ledger, contracts, integrations.
+  The ledger carries a `LEDGER_SCHEMA_VERSION`; pre-v1 ledgers still parse.
+- **terse-output A/B measurement (M17):** `HARNESS_TERSE_AB=1` runs a real
+  no-terse-vs-terse pass and logs the signed OUTPUT-token delta — the honest
+  signal that feeds `harness doctor`'s auto-disable window.
+- **Optional gstack integration (M18):** `harness doctor` detects gstack
+  (orchestration leaves) and degrades honestly when it's absent — no hard dep.
+- **Production-ready hook performance (M19):** a hard latency budget pins both
+  hot-path hooks; `intercept` runs ~0.5ms and `compress-output` ~3ms on a
+  4000-line log (100× token reduction).
+
+Shipped since v0.2.0:
 - **Real LLM calls (M10):** the loop runs through the `claude` CLI on your
   subscription (no API key); deterministic offline stub under `HARNESS_SIMULATE=1`.
 - **PostToolUse compression (M11):** `harness compress-output` shrinks real Bash
@@ -477,12 +491,10 @@ All milestones M0–M15 implemented and passing. What shipped since v0.2.0:
   call in the test suite; offline stays green.
 - CLI: `init`, `report`, `compile`, `doctor`, `policy`, `learn`, `uninstall`.
 
-### Toward v1.0.0
-- Stable API for rules, policy, ledger schema
-- terse-output live A/B output-delta measurement (mechanism shipped; real
-  measurement needs a no-terse baseline)
-- Optional gstack integration (orchestration leaves)
-- Production-ready hook performance
+### Beyond v1.0.0
+- Additional Anthropic model tiers as they ship
+- Ledger schema v2 migrations (the versioned schema makes this safe)
+- More native capabilities in the integrations layer
 
 ---
 

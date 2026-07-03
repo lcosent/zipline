@@ -97,6 +97,37 @@ condition for the item (no "looks good").
   the criterion. Verify gate hardening shipped; offline M1-M14 stay green.
 - **blocked-by:** —
 
+## M16 — Stable public API surface
+
+- **status:** DONE — barrel `src/index.ts` re-exports the frozen v1 surface
+  (compiler/policy/ledger/contracts/integrations/paths + `API_VERSION`); ledger
+  gains `LEDGER_SCHEMA_VERSION` stamped on write, pre-v1 lines default to v1.
+  `package.json` main→`dist/index.js`, adds `exports`/`types`. m16-test 7/7.
+- **blocked-by:** —
+
+## M17 — terse-output live A/B output-delta measurement
+
+- **status:** DONE — `integrations/terse-ab.ts` runs a paired no-terse-vs-terse
+  call, returns the signed OUTPUT delta; `HARNESS_TERSE_AB=1` wires it into the
+  loop; delta feeds the existing `shouldDisable` window. m17-test 7/7.
+- **blocked-by:** M16 (DONE)
+
+## M18 — Optional gstack integration (orchestration leaves)
+
+- **status:** DONE — `RepoEnv.gstackInstalled` detects gstack (`$GSTACK_HOME` or
+  `~/.claude/skills/gstack`); `harness doctor` shows an Orchestration section;
+  detected-never-invoked, absence degrades honestly. m18-test 5/5.
+- **blocked-by:** —
+
+## M19 — Production-ready hook performance
+
+- **status:** DONE — hard 150ms latency budget on both hot-path hooks; measured
+  intercept ~0.5ms, compress-output ~3ms on a 4000-line log (100× reduction).
+  m19-test 4/4.
+- **blocked-by:** —
+
+---
+
 ## Done
 
 - M0-M7 — core spine (autonomy, compiler, router, contracts, loop, learning, dashboard, cross-project).
@@ -108,6 +139,11 @@ condition for the item (no "looks good").
 - M13 — cross-project policy sync (`harness policy pull/push`).
 - M14 — continuous-learning pipeline (`harness learn`, proposal-only).
 - M15 — live-path validation gate (real subscription call, opt-in via HARNESS_LIVE=1).
+- M16 — stable public API surface + versioned ledger schema (v1 gate).
+- M17 — terse-output A/B output-delta measurement (v1 gate).
+- M18 — optional gstack integration, honest degradation (v1 gate).
+- M19 — production-ready hook performance, hard latency budget (v1 gate).
 
+**v1.0.0 cut** — all four roadmap v1 gates shipped; M0–M19 green offline.
 **Backlog drained** — no runnable TODO remains. Add new items above the Done
 section for `/loop` to pick up.

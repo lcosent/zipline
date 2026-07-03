@@ -6,6 +6,7 @@ import { proposeChanges, computeStats, renderProposals } from "./learn";
 
 function entry(inc: string[], exc: string[], pass: boolean): LedgerEntry {
   return {
+    schema: 1,
     ts: "2026-01-01T00:00:00Z",
     milestone: "M1",
     step: "s",

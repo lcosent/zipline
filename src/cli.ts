@@ -305,6 +305,20 @@ function doctorCommand() {
     console.log("");
     console.log("Capability net delta: no capability runs logged yet.");
   }
+
+  // Optional orchestration layer (gstack). Detected, never invoked — harness's
+  // job is token accounting; gstack owns multi-agent orchestration leaves.
+  // Honest degradation: if it isn't installed, we say so and nothing breaks.
+  console.log("");
+  console.log("Orchestration (optional)");
+  console.log("─".repeat(52));
+  if (env.gstackInstalled) {
+    console.log("✓ gstack           installed — orchestration leaves available");
+  } else {
+    console.log(
+      "○ gstack           not installed — orchestration leaves unavailable (optional)"
+    );
+  }
 }
 
 function main() {

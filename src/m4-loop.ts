@@ -4,6 +4,7 @@ import { Policy, nextTier, Tier } from "./policy";
 import { StepOutputSchema } from "./contract";
 import { callModel } from "./llm";
 import { runCapability } from "./integrations";
+import { measureTerseOutputDelta, terseABToLogEntry } from "./integrations/terse-ab";
 
 export interface DesignPrompt {
   hypothesis: string;
@@ -282,6 +283,23 @@ export async function buildStep(
   // Success = the model returned substantive output for the step.
   const pass = resp.text.trim().length > 0;
 
+  // terse OUTPUT-delta accounting (M17). By default we log neutral (no A/B) so
+  // terse never falsely auto-disables on the input-side fragment cost. With
+  // HARNESS_TERSE_AB=1 we run a real no-terse baseline pass and log the signed
+  // OUTPUT delta — the honest measurement that feeds shouldDisable. Opt-in
+  // because the A/B doubles model calls for the build step.
+  let terseLog = {
+    name: "terse-output",
+    tokens_before: terse.tokensBefore,
+    tokens_after: terse.tokensBefore, // neutral placeholder
+    source: terse.source,
+    net_delta_exempt: false,
+  };
+  if (process.env.HARNESS_TERSE_AB === "1") {
+    const ab = measureTerseOutputDelta(baseObjective, tier);
+    terseLog = terseABToLogEntry(ab);
+  }
+
   // Record terse's OUTPUT effect, not its input-side fragment cost. terse
   // prepends a fragment, so input-side after>before would always read
   // "net-negative" and falsely auto-disable it. Its true payoff is shorter model
@@ -306,17 +324,7 @@ export async function buildStep(
       rules_included: bundle.rules_included,
       rules_excluded: bundle.rules_excluded,
       note: `files=${milestone.files.length} src=${resp.source}`,
-      capabilities: [
-        {
-          name: "terse-output",
-          // Neutral offline (no A/B baseline yet). Real output-delta lands with
-          // output measurement; the disable window then trips on genuine data.
-          tokens_before: terse.tokensBefore,
-          tokens_after: terse.tokensBefore,
-          source: terse.source,
-          net_delta_exempt: false,
-        },
-      ],
+      capabilities: [terseLog],
     },
     repoRoot
   );

@@ -1,11 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
-import { readLedger, LedgerEntry } from "./ledger";
+import { readLedger, LedgerEntry, LedgerEntryInput } from "./ledger";
 import { buildReport, detectRegression, reconciles } from "./report";
 
 const LEDGER_PATH = path.join(process.cwd(), ".harness", "ledger.jsonl");
 
-function seedRow(over: Partial<LedgerEntry>): LedgerEntry {
+function seedRow(over: Partial<LedgerEntryInput>): LedgerEntryInput {
   return {
     ts: "t",
     milestone: "m6-test",
@@ -28,7 +28,7 @@ function seedRow(over: Partial<LedgerEntry>): LedgerEntry {
 
 function main() {
   fs.mkdirSync(path.dirname(LEDGER_PATH), { recursive: true });
-  const rows: LedgerEntry[] = [
+  const rows: LedgerEntryInput[] = [
     seedRow({ tokens_in: 70, baseline_tokens: 100 }), // savings 0.30
     seedRow({ tokens_in: 60, baseline_tokens: 100 }), // savings 0.40
     seedRow({ tokens_in: 50, baseline_tokens: 100 }), // savings 0.50
