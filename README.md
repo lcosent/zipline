@@ -190,11 +190,80 @@ Savings by milestone:
 
 ---
 
+## Integrations (automatic) — M8
+
+Harness leverages best-in-class efficiency tools **automatically**. You never
+invoke or pick a tool. Each capability is **replicated natively in TypeScript**
+(always-on, zero setup) and uses a **real external tool as an accelerator** when
+one is detected. Nothing is bundled; no hard dependencies.
+
+| Capability | Native (always on) | Accelerator | Selected when |
+|---|---|---|---|
+| `output-compress` | filter / dedupe / truncate command output | `rtk` on PATH | a step runs a shell command |
+| `symbol-query` | TS Language Service (type / diagnostics, no whole-file reads) | LSP-MCP (detected) | step tagged `typescript`/`review` |
+| `doc-fetch` | `node_modules` README + type surface | Context7 MCP (detected) | step names a package |
+| `terse-output` | dense-output prompt fragment | — | every model-prompt build |
+| `decision-log` | append-only decisions | — | gate / verify outcomes |
+
+Capabilities are **per-repo aware**: `symbol-query` needs a `tsconfig`, so in a
+Python or Go repo it reports "inactive here" instead of erroring. See the
+[selection flow](docs/ARCHITECTURE.md#capability-selection--automatic-per-repo-aware).
+
+```bash
+harness doctor
+```
+
+```
+Harness Integrations
+────────────────────────────────────────────────────
+✓ output-compress  native + rtk (accelerator)
+✓ terse-output     native (prompt fragment)
+✓ symbol-query     native (TS Language Service)  · LSP-MCP also configured
+✓ doc-fetch        native (node_modules README + types)
+✓ decision-log     native (append-only)
+
+Capability net delta (last 20 runs): 63.8%  [capability transforms only]
+```
+
+In a non-TypeScript repo the same command honestly degrades:
+
+```
+○ symbol-query     native (TS repos only) — inactive here
+○ doc-fetch        native (node_modules only) — inactive here  · Context7 MCP not configured (optional)
+```
+
+Full diagrams (system overview, request data-flow, capability selection) live in
+**[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+---
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    subgraph spine["harness spine"]
+        C["COMPILER"] --> R["ROUTER"] --> L["LOOP"] --> LG["LEDGER"]
+    end
+    P["prompt<br/>(UserPromptSubmit hook)"] --> C
+    C -.enrich.-> I["integrations<br/>compress · symbol-query · doc-fetch<br/>terse · decision-log"]
+    I -.accelerator.-> X["rtk (PATH)<br/>Context7 / LSP-MCP (detected)"]
+    I --> LG
+    LG --> S[".harness/ledger.jsonl<br/>savings, provable per run"]
+
+    classDef s fill:#1e3a5f,stroke:#4a90d9,color:#fff
+    classDef i fill:#2d4a2d,stroke:#5cb85c,color:#fff
+    class C,R,L,LG s
+    class I i
+```
+
+---
+
 ## Documentation
 
 - **[Quick Start](#quick-start)** — Get up and running in 5 minutes
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Diagrams: spine, data-flow, capability selection
 - **[DESIGN.md](DESIGN.md)** — Architecture, risks, design decisions
-- **[MILESTONES.md](MILESTONES.md)** — Detailed success criteria (M0-M7)
+- **[MILESTONES.md](MILESTONES.md)** — Detailed success criteria (M0-M8)
 - **[IMPLEMENTATION.md](IMPLEMENTATION.md)** — What was built, metrics, roadmap
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — Development guide
 - **[CHANGELOG.md](CHANGELOG.md)** — Version history
@@ -209,6 +278,7 @@ Savings by milestone:
 | `harness init [--global]` | Initialize `.harness/` in current dir (or `~/.harness/`) |
 | `harness report [--global]` | Show token savings and system metrics |
 | `harness compile "goal" tags` | Manually compile context bundle for a step |
+| `harness doctor` | Show integrations stack + per-repo availability |
 | `harness uninstall [--global] [--force]` | Remove `.harness/` and hooks (warns if data exists) |
 
 ---
@@ -381,15 +451,18 @@ npm run test:m7       # M7: Cross-project policy
 
 ## Roadmap
 
-### v0.1.0 (Current) ✅
-- All milestones (M0-M7) implemented and passing
-- CLI: `init`, `report`, `compile`, `uninstall`
-- Path resolution (finds `.harness/` upward like git)
-- Test suite with proven metrics
+### v0.2.0 (Current) ✅
+- All milestones (M0-M8) implemented and passing
+- **Hook integration:** `harness intercept` compiles + injects real context on
+  every `UserPromptSubmit` (fixed the v0.1.0 hook-format bug)
+- **M8 integrations:** 5 native capabilities + accelerators + `harness doctor`
+- CLI: `init`, `report`, `compile`, `doctor`, `uninstall`
+- Docs: Mermaid architecture diagrams ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md))
 
-### v0.2.0 (Next)
-- **Hook integration:** Transparent context compilation on every `claude>` prompt
-- **Real LLM calls:** Replace simulated agents with Anthropic API
+### v0.3.0 (Next)
+- **Real LLM calls:** Replace the simulated loop (`Math.random()`) with Anthropic API
+- **PostToolUse hook:** Compress real user Bash output (M8 compress is internal-loop-only today)
+- **terse-output live auto-disable:** Needs real model output to measure net delta
 - **Policy sync:** `harness policy pull/push` for cross-repo sharing
 - **Continuous learning:** Ledger → new rules/skills via `continuous-learning-v2`
 

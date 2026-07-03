@@ -202,3 +202,32 @@ Milestone status values: `PENDING → IN_PROGRESS → PASSED / BLOCKED`.
 | M5 | Learning | ✅ | |
 | M6 | Dashboard | ✅ EXPANSION | Cut if you want a leaner v1 |
 | M7 | Cross-project policy | ✅ EXPANSION | The durable, portable artifact |
+| M8 | Integrations layer | ✅ EXPANSION | 5 native capabilities + accelerators + `harness doctor`; connect-the-pipe intercept |
+| M9 | Docs (Mermaid) | ✅ EXPANSION | Architecture diagrams in README + docs/ARCHITECTURE.md |
+
+---
+
+## M8 — Integrations layer (native-first, accelerator-optional)
+
+- **Goal:** Leverage best-in-class efficiency tools automatically. Each capability
+  is replicated natively in TypeScript (always-on) and uses a real external tool as
+  an accelerator when detected. The user never picks a tool. No hard deps.
+- **Build:** `src/integrations/` — `detect.ts` (cached `RepoEnv`), 5 capabilities
+  (output-compress, symbol-query, doc-fetch, terse-output, decision-log), `registry.ts`
+  (tag-based `selectCapabilities`), `index.ts` (`runCapability` + net-delta + auto-disable).
+  `harness doctor` shows per-repo availability. `harness intercept` compiles + injects
+  real context on `UserPromptSubmit` and logs real `tokens_in`.
+- **Success criterion:** 20 gates pass — intercept savings; compress ≥40% on a noisy log
+  (hit 66.6%); symbol-query returns a real type without whole-file reads; non-TS
+  degradation; decision-log net-delta exempt; auto-disable window guard; tag selection.
+- **Gate → M9:** capabilities degrade honestly per-repo (doctor shows inactive, no crash).
+
+## M9 — Docs (Mermaid diagrams)
+
+- **Goal:** Make the architecture legible on GitHub with native-rendering diagrams.
+- **Build:** `docs/ARCHITECTURE.md` (system overview flowchart, request data-flow
+  sequenceDiagram, capability-selection flowchart) + README Integrations section and
+  at-a-glance diagram. Hero SVG cut (gold-plating).
+- **Success criterion:** Mermaid fences valid and render on GitHub; README documents
+  the integrations layer and `harness doctor`.
+- **Gate:** none (leaf).
