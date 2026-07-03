@@ -21,6 +21,7 @@ import {
 } from "./init-templates";
 import { interceptFromStdin } from "./intercept";
 import { compressOutputFromStdin } from "./compress-output";
+import { pushPolicy, pullPolicy, centralPolicyPath } from "./policy-sync";
 import { CAPABILITIES, detectRepoEnv, resolveAvailability } from "./integrations";
 import { readLedger } from "./ledger";
 import { buildReport, detectRegression } from "./report";
@@ -340,6 +341,26 @@ function main() {
         doctorCommand();
         break;
 
+      case "policy": {
+        const root = requireHarnessRoot();
+        const sub = args[0];
+        if (sub === "push") {
+          const r = pushPolicy(root);
+          console.log(`Pushed policy → ${r.central}`);
+          console.log(`Changed ${r.changed.length} step(s): ${r.changed.join(", ") || "none"}`);
+        } else if (sub === "pull") {
+          const r = pullPolicy(root);
+          console.log(`Pulled policy ← ${r.central}`);
+          console.log(`Updated ${r.changed.length} step(s): ${r.changed.join(", ") || "none"}`);
+          console.log(`Per-repo overrides preserved.`);
+        } else {
+          console.error("Usage: harness policy <pull|push>");
+          console.error(`Central store: ${centralPolicyPath()}`);
+          process.exit(1);
+        }
+        break;
+      }
+
       case "intercept":
         interceptCommand();
         break;
@@ -356,6 +377,7 @@ Usage:
   harness report [--global]       Show token savings and system metrics
   harness compile "goal" tags     Compile context bundle for a step
   harness doctor                  Show integrations stack + per-repo availability
+  harness policy <pull|push>      Sync routing policy with the central store (repo overrides win)
   harness uninstall [--global] [--force]  Remove .harness/ and hooks
   harness intercept               (Internal: called by Claude Code hook)
 

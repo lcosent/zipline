@@ -8,8 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Cross-project policy sync `harness policy pull/push` (M13)
 - Continuous-learning pipeline: ledger → rule/skill proposals (M14)
+
+## [0.6.0] - 2026-07-03
+
+### Added
+- **M13: cross-project policy sync** — `harness policy pull|push` makes the
+  routing policy a portable, versioned artifact shared across repos. Central
+  store is `$HARNESS_POLICY_REMOTE` or `~/.harness/policy.yaml`. `push` publishes
+  the repo's tuned policy (local wins); `pull` layers central defaults UNDER the
+  repo's own entries so per-repo overrides always survive. Every sync logs
+  provenance (op, changed steps, source) to the ledger. Flat `key: tier` parser —
+  no YAML dependency added.
 
 ## [0.5.0] - 2026-07-03
 

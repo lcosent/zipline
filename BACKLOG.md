@@ -53,7 +53,10 @@ condition for the item (no "looks good").
 
 ## M13 — Cross-project policy sync
 
-- **status:** TODO
+- **status:** DONE — `harness policy pull|push` against a central store
+  (`$HARNESS_POLICY_REMOTE` or `~/.harness/policy.yaml`). push=local wins,
+  pull=repo overrides preserved; provenance logged. Flat parser, no YAML dep.
+  m13-test 8/8 (round-trip, override survives, provenance).
 - **blocked-by:** —
 - **why:** M7 proved a shared policy generalizes; there's no transport yet.
 - **build:** `harness policy pull|push` against a versioned central policy file
