@@ -7,7 +7,7 @@
 [![npm version](https://img.shields.io/npm/v/harness.svg?style=flat-square)](https://www.npmjs.com/package/harness)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](https://github.com/YOUR_USERNAME/harness)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](https://github.com/lcosent/harness)
 
 Save 60-70% of input tokens by compiling minimal context instead of dumping full CLAUDE.md
 
@@ -88,7 +88,7 @@ npm install -g harness
 <summary>Or install from source</summary>
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/harness.git
+git clone https://github.com/lcosent/harness.git
 cd harness
 npm install
 npm run build
@@ -451,6 +451,6 @@ Inspired by the need to make Claude Code builds faster, cheaper, and more observ
 
 **[⬆ back to top](#harness)**
 
-Made with ☕ by [Luca](https://github.com/YOUR_USERNAME)
+Made with ☕ by [Luca](https://github.com/lcosent)
 
 </div>

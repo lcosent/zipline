@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/harness.git"
+    "url": "git+https://github.com/lcosent/harness.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/harness/issues"
+    "url": "https://github.com/lcosent/harness/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/harness#readme",
+  "homepage": "https://github.com/lcosent/harness#readme",
   "scripts": {
     "build": "tsc",
     "test": "npm run test:m1 && npm run test:m2 && npm run test:m3 && npm run test:m4 && npm run test:m5 && npm run test:m6 && npm run test:m7",
