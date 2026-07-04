@@ -1,6 +1,6 @@
 {
   "name": "zipline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Save 60-70% of Claude Code input tokens by compiling minimal context instead of full CLAUDE.md",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

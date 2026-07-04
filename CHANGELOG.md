@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-04
+
 ### Added — Fable-era routing (M20–M23)
 
 Four routing upgrades prompted by the shift to Fable 5 as a first-class,

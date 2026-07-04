@@ -405,15 +405,10 @@ ZIPLINE_LIVE=1 npm run test:m10   # opt-in: exercise a real Claude subscription 
 
 ## Roadmap
 
-**v1.0.0 (current)** — first stable release. Everything in this README ships and
-is tested: transparent context compilation, model routing, typed contracts, the
-full orchestration loop, self-learning, the token dashboard, cross-project policy
-sync, automatic integrations, a stable public API, and production-ready hook
-performance.
-
-**Fable-era routing (M20–M23, unreleased)** — the router now reasons about
-Fable and reasoning effort, demotes on cost regression (not just failures), and
-can cap an autonomous run's spend. All backward-compatible.
+**v1.1.0 (current)** — Fable-era routing. The router now reasons about Fable and
+reasoning effort, demotes on cost regression (not just failures), and can cap an
+autonomous run's spend. All backward-compatible — no ledger schema bump, old
+`policy.yaml` files still parse, budget off by default.
 - **Fable tier (M20)** — a first-class architect tier (~2× opus), assigned by
   policy only; escalation can never promote a stalled step into it.
 - **Effort axis (M21)** — `tier@effort` overrides mapped to `claude --effort`;

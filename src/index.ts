@@ -102,4 +102,4 @@ export { findZiplineRoot, requireZiplineRoot } from "./paths";
  * with package.json. Distinct from LEDGER_SCHEMA_VERSION, which versions only
  * the on-disk ledger record.
  */
-export const API_VERSION = "1.0.0";
+export const API_VERSION = "1.1.0";
